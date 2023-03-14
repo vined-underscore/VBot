@@ -1,6 +1,7 @@
 ## How to setup:
+- Download Python
 - Run `install.py`
-- Put your token in `config.py`
+- Put your token and other optional info in `config.py` 
 - Run `main.py`
 
 ## Notice:
