@@ -13,5 +13,5 @@
 - Developed by me and me only
 - The only commands that aren't mine are `eval` and `hypesquad` (hypesquad is from [Zeenode](https://github.com/zeenode/selfbot) and the eval command is from some youtube tutorial vid)
 
-##### Notice:
+## Notice:
 - With the new version of `discord.py-self`, for some reason it takes a while to send commands in DMs/Group chats but after doing it once it acts normal again.
