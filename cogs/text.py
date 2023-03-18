@@ -10,7 +10,7 @@ class TextCmds(
     self.bot = bot
 
   @vbot.command(
-    name="encode",
+    name = "encode",
     description = "Encodes a string into base64"
   )
   async def encode(self, ctx, *, string):
@@ -124,7 +124,8 @@ class TextCmds(
         
   @vbot.group(
     name = "ascii",
-    description = "ASCII-ify your message"
+    description = "ASCII-ify your message",
+    invoke_without_command = True
   )
   async def ascii(self, ctx, *, args):
       msg = ctx.message
@@ -132,7 +133,7 @@ class TextCmds(
       await msg.edit(content = f'```yaml\n{text}```')
       
   @ascii.command(
-    name = "asciirandom",
+    name = "random",
     description = "ASCII-ify your message with a random font"
   )
   async def asciirandom(self, ctx, *, args):
