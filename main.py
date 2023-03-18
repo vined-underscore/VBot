@@ -8,7 +8,7 @@ from selfcord.ext import commands
 token = config.token
 prefix = config.prefix
 
-__version__ = "3.0"
+__version__ = "3.1"
 __author_id__ = 851442209021493268 # No skid pls
 __cog_folder__ = "cogs" # Change this if you ever rename the "cogs" folder
 
