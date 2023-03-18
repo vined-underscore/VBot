@@ -10,7 +10,6 @@ from colorama import Fore
 from main import token
 from time import perf_counter
 from utils.req import __api__
-from functools import lru_cache
 
 class NitroSniper(
     vbot.Cog,
@@ -19,8 +18,8 @@ class NitroSniper(
     self.bot = bot 
     self.reg = re.compile("(discord.gift/|discord.com/gifts/|discordapp.com/gifts/)([a-zA-Z0-9]+)")
     try:
-      session = aiohttp.ClientSession()
-      self.webhook = discord.Webhook.from_url(nitro_sniper_url, session = session)
+      self.session = aiohttp.ClientSession()
+      self.webhook = discord.Webhook.from_url(nitro_sniper_url, session = self.session)
 
     except:
       pass
@@ -149,35 +148,32 @@ class NitroSniper(
       if self.reg.search(msg.content):
         code = self.reg.search(msg.content).group(2)
         
-        @lru_cache(maxsize=None)
-        async def snipe():
-          async with aiohttp.ClientSession() as client:
-            start = perf_counter()
-            async with await client.post(
-              f"{__api__}/entitlements/gift-codes/{code}/redeem",
-              json = {
-                "channel_id": str(msg.channel.id)
-              },
-              headers = {
-                "authorization": token,
-              }) as r:        
-                end = perf_counter()
-                c = await r.text()
+        async with aiohttp.ClientSession() as client:
+          start = perf_counter()
+          async with await client.post(
+            f"{__api__}/entitlements/gift-codes/{code}/redeem",
+            json = {
+              "channel_id": str(msg.channel.id)
+            },
+            headers = {
+              "authorization": token,
+              "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36 RuxitSynthetic/1.0"
+            }) as r:        
+              end = perf_counter()
+              c = await r.text()
 
-                delay = end - start
-                r_delay = "%.3fs" % delay
-                  
-                if isinstance(msg.channel, discord.DMChannel):
-                  await self.snipe_dm(code, msg, c, r_delay)
-                  
-                elif isinstance(msg.channel, discord.GroupChannel):
-                  await self.snipe_dm(code, msg, c, r_delay)
-                  
-                else:
-                  await self.snipe_server(code, msg, c, r_delay)
-      
-        await snipe()
-        
+              delay = end - start
+              r_delay = "%.3fs" % delay
+                
+              if isinstance(msg.channel, discord.DMChannel):
+                await self.snipe_dm(code, msg, c, r_delay)
+                
+              elif isinstance(msg.channel, discord.GroupChannel):
+                await self.snipe_dm(code, msg, c, r_delay)
+                
+              else:
+                await self.snipe_server(code, msg, c, r_delay)
+            
       # future invite sniper
       # reg = re.compile("(https://discord.gg/|https://discord.com/invite/|discord.gg/)([a-zA-Z0-9]+)")
       
@@ -186,4 +182,6 @@ class NitroSniper(
       #   print(code)
     
 async def setup(bot):
-  await bot.add_cog(NitroSniper(bot))
+  sniper = NitroSniper(bot)
+  await sniper.session.close()
+  await bot.add_cog(sniper)
