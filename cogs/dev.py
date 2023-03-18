@@ -8,6 +8,7 @@ import traceback
 from contextlib import redirect_stdout
 from utils import alias
 from selfcord.ext import commands as vbot
+from colorama import Fore
 
 class DevCmds(
     vbot.Cog,
@@ -31,10 +32,8 @@ class DevCmds(
     aliases = alias.get_aliases("logout")
   )
   async def logout(self, ctx):
-    await ctx.message.delete()
-    
+    print(f"{Fore.GREEN}[+]{Fore.LIGHTWHITE_EX} Logged out of the account {Fore.LIGHTBLUE_EX}{self.bot.user}")
     await self.bot.close()
-    print("Logged out of the account", self.bot.user)
 
   @vbot.command(
     name = "load",
