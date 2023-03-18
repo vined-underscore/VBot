@@ -7,7 +7,7 @@ class ErrorHandler(vbot.Cog):
         self.bot = bot
 
     @vbot.Cog.listener()
-    async def on_command_error(self, ctx, error):
+    async def on_command_error(self, ctx: vbot.Context, error):
         cog = ctx.cog
         msg = ctx.message
         
@@ -18,7 +18,7 @@ class ErrorHandler(vbot.Cog):
         error = getattr(error, 'original', error)
         
         if isinstance(error, vbot.CommandNotFound):
-            await msg.edit(content = f"```yaml\n❌ The command does not exist.```", delete_after = 5)
+            await msg.edit(content = f"```yaml\n❌ The command \"{msg.content.split(' ')[0]}\" does not exist.```", delete_after = 5)
 
         elif isinstance(error, vbot.MissingRequiredArgument):
             await msg.edit(content = f"```yaml\n❌ You forgot to write the parameter \"{error.param.name}\".```", delete_after = 5)
