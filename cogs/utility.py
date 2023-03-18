@@ -42,7 +42,7 @@ class UtilityCmds(
     else:
         channel = msg.channel
 
-    if isinstance(channel, discord.GroupChannel):
+    if isinstance(channel, discord.GroupChannel) or isinstance(channel, discord.DMChannel):
       count = 0
       async for message in channel.history(limit = amount):  
           if self.is_clear == False: return
@@ -139,7 +139,7 @@ class UtilityCmds(
     name = "msgedit",
     description = "Edits an amount of your messages in the channel"
   )
-  async def msgedit(self, ctx, amount, *, txt):
+  async def msgedit(self, ctx, amount: int, *, txt: str):
     msg = ctx.message
     channel = ctx.channel
     await delete_msg(msg)
@@ -181,9 +181,7 @@ class UtilityCmds(
         discord.http.Route(
           "GET",
           "/users/{uid}",
-          uid = user.id
-        )
-      )
+          uid = user.id))
       
       banner_id = req["banner"]
       if banner_id:
@@ -255,9 +253,7 @@ Is a bot: {user.bot}
       discord.http.Route(
         "GET",
         "/users/{uid}",
-        uid=owner.id
-      )
-    )
+        uid=owner.id))
       
     banner_id = req["banner"]
     if banner_id:
@@ -300,63 +296,63 @@ Owner information:
 
   @info.command(
     name = "token",
-    description = "Gets information from a token (add true to send the token info file) (may not work if user has some non ascii characters in their name)"
+    description = "Gets information from a token (may not work if token has some non ascii characters in its name)"
   )
-  async def token(self, ctx, token, send_file = "false"):
+  async def token(self, ctx, token):
     msg = ctx.message
     
-    await delete_msg(msg)
     async with aiosonic.HTTPClient() as http:
       r_user = await http.get(
         "https://discord.com/api/v9/users/@me",
         headers = {
-          "Authorization": token
-        }
-      )
+          "authorization": token,
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9011 Chrome/91.0.4472.164 Electron/13.6.6 Safari/537.36"
+        })
 
-    nitro_types = {
-      "1": "Classic",
-      "2": "Monthly"
-    }
-    
-    try:
-      js = await r_user.json()
+      nitro_types = {
+        "1": "Classic",
+        "2": "Monthly"
+      }
+      
       try:
-        n = nitro_types[str(js['premium_type'])]
+        js = await r_user.json()
+        try:
+          n = nitro_types[str(js['premium_type'])]
 
-      except Exception as e:
-        n = "None"
-        
-      invalid_chars = "#%&{}\<>*?/ $!'\":@+`|="
-      username = f"{js['username']}#{str(js['discriminator'])}"
-      for char in invalid_chars:
-        if char in username:
-          username = username.replace(char, "_")
+        except Exception as e:
+          n = "None"
+          
+        invalid_chars = "#%&{}\<>*?/ $!'\":@+`|="
+        username = f"{js['username']}#{str(js['discriminator'])}"
+        for char in invalid_chars:
+          if char in username:
+            username = username.replace(char, "_")
 
-      info = f"""Token: {token}
+        info = f"""Token: {token}
 Username: {js['username']}#{js['discriminator']}
 ID: {js['id']}
 Email: {js['email']}
 Phone: {js['phone']}
-Avatar URL: https://cdn.discordapp.com/avatars/{js['id']}/{js['avatar']}.png
+Avatar URL: https://cdn.discordapp.com/avatars/{js['id']}/{js['avatar']}.png?size=2048
+Banner URL: https://cdn.discordapp.com/banners/{js['id']}/{js['banner']}.png?size=2048
 Bio: {None if js['bio'] == '' else js['bio']}
 Locale: {js['locale']}
 2FA Enabled: {js['mfa_enabled']}
 Verified: {js['verified']}
-Nitro Subscription: {n}
-"""
+Nitro Subscription: {n}"""
 
-      with open(f"./info/tokens/TOKEN_INFO {username}.txt", "w") as f:
-        f.write(info)
-      
-      with open(f"./info/tokens/TOKEN_INFO {username}.txt", "rb") as f:
-        if send_file == "true":
+        with open(f"./info/tokens/TOKEN_INFO {username}.txt", "w") as f:
+          f.write(info)
+        
+        with open(f"./info/tokens/TOKEN_INFO {username}.txt", "rb") as f:
           await ctx.send(file=discord.File(f))
-  
-    except Exception as e:
-      await ctx.send(f"""```yaml
-- {e}
-```""", delete_after = 5)
+    
+      except Exception as e:
+        await ctx.send(f"""```yaml
+  - {e}
+  ```""", delete_after = 5)
+    
+    await delete_msg(msg)
 
   @vbot.command(
     name = "backup-f",
@@ -671,7 +667,18 @@ Timezone: {ip_json['timezone']}```
       await msg.edit(content = f"```yaml\n- {before.author} | {before.created_at}\n   Original: {clean_b}\n   Edited: {clean_a}```")
       
     except KeyError:
-        await msg.edit(content = f"```yaml\nThere have been no recently deleted messages in the past minute.```")
+        await msg.edit(content = f"```yaml\nThere have been no recently edited messages in the past minute.```")
+
+  @vbot.command(
+    name = "prefixes",
+    description = "Sends a list of all the prefixes"
+  )
+  async def prefixes(self, ctx):
+    pfxs = main.prefix
+    msg = ctx.message
+    nl = "\n- "
+    
+    await msg.edit(f"```yaml\nThere are/is {len(pfxs)} prefix(es):\n- {nl.join(pfxs)}```", delete_after = 5)
     
 if __name__ == "__main__":
     print("You need to run main.py to run the bot")
