@@ -95,7 +95,7 @@ class MiscCmds(
   )
   async def status(self, ctx):
     msg = ctx.message
-    await msg.edit(content=f"```yaml\n- Incorrect usage. Correct usage: {main.prefix}help [status]```", delete_after = 5)
+    await msg.edit(content=f"```yaml\n- Incorrect usage. Correct usage: {ctx.clean_prefix}help [status]```", delete_after = 5)
     
   @status.command(
     name = "dnd",
@@ -132,6 +132,15 @@ class MiscCmds(
     msg = ctx.message
     await self.bot.change_presence(status=discord.Status.dnd)
     await msg.edit(content=f"```yaml\nChanged status to online.```", delete_after = 5)
+    
+  @status.command(
+    name = "none",
+    description = "Changes your status to none (Gives priority over your discord app status)"
+  )
+  async def none(self, ctx):
+    msg = ctx.message
+    await self.bot.change_presence(status=None)
+    await msg.edit(content=f"```yaml\nChanged status to none.```", delete_after = 5)
   
   @vbot.command(
     name = "clearconsole",
@@ -141,15 +150,12 @@ class MiscCmds(
     await ctx.message.delete()
     
     other.clear_console()
-    events.banner()
-    print(f"""{F.LIGHTBLACK_EX}
-Running {F.CYAN}VBot{F.LIGHTBLACK_EX} on {F.LIGHTBLUE_EX}{self.bot.user}{F.LIGHTBLACK_EX} with prefix {F.LIGHTCYAN_EX}{main.prefix}
-
-{F.LIGHTBLACK_EX}(?){F.LIGHTWHITE_EX} Nitro Sniper enabled: {F.LIGHTRED_EX if config.nitro_sniper == False else F.LIGHTGREEN_EX}{config.nitro_sniper}
-{F.LIGHTYELLOW_EX}(+){F.LIGHTWHITE_EX} Loaded {len(self.bot.commands)} commands{F.RESET}\n""")
+    events.banner(self.bot)
+    print(f"{F.LIGHTBLACK_EX}Logged in as {F.LIGHTBLUE_EX}{self.bot.user}{F.LIGHTBLACK_EX} with {'prefix ' + F.LIGHTCYAN_EX + main.prefix[0] if len(main.prefix) == 1 else 'prefixes ' + F.LIGHTCYAN_EX + f' {F.LIGHTBLACK_EX}|{F.LIGHTCYAN_EX} '.join(main.prefix)}\n")
     
+    print(f"{F.LIGHTYELLOW_EX}(?){F.LIGHTWHITE_EX} Nitro Sniper enabled: {F.LIGHTRED_EX if config.nitro_sniper == False else F.LIGHTGREEN_EX}{config.nitro_sniper}")
     if config.nitro_sniper:
-      print(f"{F.LIGHTGREEN_EX}(+){F.LIGHTWHITE_EX} Sniping {len(self.bot.guilds)} servers\n")
+      print(f"{F.LIGHTGREEN_EX}(+){F.LIGHTWHITE_EX} Nitro sniping {len(self.bot.guilds)} servers\n")
 
   @vbot.command(
     name = "ping",
