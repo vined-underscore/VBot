@@ -11,6 +11,7 @@ import struct
 import main
 from selfcord.ext import commands as vbot
 from utils import alias
+from utils.msg import delete_msg
 
 class FunCmds(
     vbot.Cog,
@@ -33,7 +34,7 @@ class FunCmds(
       return await msg.edit('```yaml\n- Already copying that user.```', delete_after = 5)
       
     if ctx.message.author.id == user.id:
-      return await msg.edit('```yaml\n- Can\'t copy yourself.```', delete_after = 5)
+      return await msg.edit('```yaml\n- You can\'t copy yourself.```', delete_after = 5)
       
     self.copy_ids.append(user.id)
     await msg.edit(content = f"```yaml\n+ Now copying {user}```", delete_after = 5)
@@ -271,123 +272,157 @@ Message URL: {firstm.jump_url}```""")
   )
   async def facts(self, ctx):
     msg = ctx.message
-    await msg.edit(content=f"```yaml\n- Incorrect usage. Correct usage: {main.prefix}help [facts]```", delete_after = 5)
+    await msg.edit(content=f"```yaml\n- Incorrect usage. Correct usage: {ctx.clean_prefix}help [facts]```", delete_after = 5)
     
   @facts.command(
     name = "bird",
     description = "Random bird fact"
   )
   async def bird(self, ctx):
+    msg = ctx.message
+    
     async with aiosonic.HTTPClient() as http:
       r = await http.get(f"https://some-random-api.ml/animal/bird")
       js = await r.json()
       fact = js["fact"]
       image = js["image"]
       await ctx.send(f"""```yaml\nBird Fact: {fact}```\n{image}""")
+    
+    await delete_msg(msg)
           
   @facts.command(
     name = "cat",
     description = "Random cat fact"
   )
   async def cat(self, ctx):
+    msg = ctx.message
+    
     async with aiosonic.HTTPClient() as http:
       r = await http.get(f"https://some-random-api.ml/animal/cat")
       js = await r.json()
       fact = js["fact"]
       image = js["image"]
       await ctx.send(f"""```yaml\nCat Fact: {fact}```\n{image}""")
+      
+    await delete_msg(msg)
 
   @facts.command(
     name = "dog",
     description = "Random dog fact"
   )
   async def dog(self, ctx):
+    msg = ctx.message
+    
     async with aiosonic.HTTPClient() as http:
       r = await http.get(f"https://some-random-api.ml/animal/dog")
       js = await r.json()
       fact = js["fact"]
       image = js["image"]
       await ctx.send(f"""```yaml\nDog Fact: {fact}```\n{image}""")
+      
+    await delete_msg(msg)
           
   @facts.command(
     name = "kangaroo",
     description = "Random kangaroo fact"
   )
   async def kangaroo(self, ctx):
+    msg = ctx.message
+    
     async with aiosonic.HTTPClient() as http:
       r = await http.get(f"https://some-random-api.ml/animal/kangaroo")
       js = await r.json()
       fact = js["fact"]
       image = js["image"]
       await ctx.send(f"""```yaml\nKangaroo Fact: {fact}```\n{image}""")
+    
+    await delete_msg(msg)
           
   @facts.command(
     name = "raccoon",
     description = "Random raccoon fact"
   )
   async def raccoon(self, ctx):
+    msg = ctx.message
+    
     async with aiosonic.HTTPClient() as http:
       r = await http.get(f"https://some-random-api.ml/animal/raccoon")
       js = await r.json()
       fact = js["fact"]
       image = js["image"]
       await ctx.send(f"""```yaml\nRaccoon Fact: {fact}```\n{image}""")
+      
+    await delete_msg(msg)
 
   @facts.command(
     name = "panda",
     description = "Random panda fact"
   )
   async def panda(self, ctx):
+    msg = ctx.message
+    
     async with aiosonic.HTTPClient() as http:
       r = await http.get(f"https://some-random-api.ml/animal/panda")
       js = await r.json()
       fact = js["fact"]
       image = js["image"]
       await ctx.send(f"""```yaml\nPanda Fact: {fact}```\n{image}""")
+    
+    await delete_msg(msg)
 
   @facts.command(
     name = "fox",
     description = "Random fox fact"
   )
   async def fox(self, ctx):
+    msg = ctx.message
+    
     async with aiosonic.HTTPClient() as http:
       r = await http.get(f"https://some-random-api.ml/animal/fox")
       js = await r.json()
       fact = js["fact"]
       image = js["image"]
       await ctx.send(f"""```yaml\nFox Fact: {fact}```\n{image}""")
+    
+    await delete_msg(msg)
 
   @facts.command(
     name = "koala",
     description = "Random koala fact"
   )
   async def koala(self, ctx):
+    msg = ctx.message
+    
     async with aiosonic.HTTPClient() as http:
       r = await http.get(f"https://some-random-api.ml/animal/koala")
       js = await r.json()
       fact = js["fact"]
       image = js["image"]
       await ctx.send(f"""```yaml\nKoala Fact: {fact}```\n{image}""")
+      
+    await delete_msg(msg)
           
   @facts.command(
     name = "redpanda",
     description = "Random red panda fact"
   )
   async def redpanda(self, ctx):
+    msg = ctx.message
+    
     async with aiosonic.HTTPClient() as http:
       r = await http.get(f"https://some-random-api.ml/animal/red_panda")
       js = await r.json()
       fact = js["fact"]
       image = js["image"]
       await ctx.send(f"""```yaml\nRed Panda Fact: {fact}```\n{image}""")
+      
+    await delete_msg(msg)
        
   @vbot.Cog.listener()
   async def on_message(self, message):
     if message.author.id in self.copy_ids:
-      await message.channel.send(
-        message.content.replace(main.prefix, "prefix-")
-        if message.content.startswith(main.prefix)
-        else message.content) 
+      if message.content.startswith(tuple(main.prefix)): return
+      else: await message.channel.send(message.content)
 
 if __name__ == "__main__":
   print("You need to run main.py to run the bot")
