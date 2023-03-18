@@ -15,20 +15,22 @@ discord_ver = discord.__version__
 
 def banner(bot):
   author = bot.get_user(main.__author_id__)
-  print(fade.purplepink(f"""
+  print(fade.purpleblue(f"""
 
 ██╗   ██╗██████╗  ██████╗ ████████╗
 ██║   ██║██╔══██╗██╔═══██╗╚══██╔══╝
 ██║   ██║██████╔╝██║   ██║   ██║   
 ╚██╗ ██╔╝██╔══██╗██║   ██║   ██║   
  ╚████╔╝ ██████╔╝╚██████╔╝   ██║   
-  ╚═══╝  ╚═════╝  ╚═════╝    ╚═╝   
-                                   
+  ╚═══╝  ╚═════╝  ╚═════╝    ╚═╝                              
 """))
-  print(f"""{F.LIGHTBLACK_EX}
-|------> {F.LIGHTWHITE_EX}VBot{F.LIGHTBLUE_EX} v{bot_ver} {F.LIGHTBLACK_EX}<------ {fade.purpleblue('Made')}{F.LIGHTBLACK_EX}
-|------> {F.LIGHTWHITE_EX}discord.py{F.LIGHTBLUE_EX} v{discord_ver} {F.LIGHTBLACK_EX}<------ {fade.purpleblue('by')}{F.LIGHTBLACK_EX}
-|------> {F.LIGHTWHITE_EX}Python{F.LIGHTBLUE_EX} v{py_ver} {F.LIGHTBLACK_EX}<------ {fade.purpleblue(f'{author.name}#{author.discriminator}')}""")
+  print(f"""
+{F.LIGHTBLACK_EX}-> {F.LIGHTWHITE_EX}VBot {F.LIGHTBLUE_EX}v{main.__version__}    
+{F.LIGHTBLACK_EX}-> {F.LIGHTWHITE_EX}discord.py {F.LIGHTBLUE_EX}v{discord_ver}        
+{F.LIGHTBLACK_EX}-> {F.LIGHTWHITE_EX}Python {F.LIGHTBLUE_EX}v{py_ver}         
+{F.LIGHTBLACK_EX}-> {F.LIGHTWHITE_EX}Made by {F.LIGHTBLUE_EX}{author}
+{F.LIGHTBLACK_EX}-> {F.LIGHTBLUE_EX}{len([command for command in bot.walk_commands()])} {F.LIGHTWHITE_EX}commands and subcommands
+""")
 
 class Events(
     vbot.Cog,
@@ -40,22 +42,11 @@ class Events(
   async def on_connect(self):
     other.clear_console()
     banner(self.bot)
-    print(f"""{F.LIGHTBLACK_EX}
-Running {F.CYAN}VBot{F.LIGHTBLACK_EX} on {F.LIGHTBLUE_EX}{self.bot.user}{F.LIGHTBLACK_EX} with prefix {F.LIGHTCYAN_EX}{main.prefix}
-
-{F.LIGHTBLACK_EX}(?){F.LIGHTWHITE_EX} Nitro Sniper enabled: {F.LIGHTRED_EX if config.nitro_sniper == False else F.LIGHTGREEN_EX}{config.nitro_sniper}
-{F.LIGHTYELLOW_EX}(+){F.LIGHTWHITE_EX} Loaded {len([command for command in self.bot.walk_commands()])} commands{F.RESET}\n""")
+    print(f"{F.LIGHTBLACK_EX}Logged in as {F.LIGHTBLUE_EX}{self.bot.user}{F.LIGHTBLACK_EX} with {'prefix ' + F.LIGHTCYAN_EX + main.prefix[0] if len(main.prefix) == 1 else 'prefixes ' + F.LIGHTCYAN_EX + f' {F.LIGHTBLACK_EX}|{F.LIGHTCYAN_EX} '.join(main.prefix)}\n")
     
+    print(f"{F.LIGHTYELLOW_EX}(?){F.LIGHTWHITE_EX} Nitro Sniper enabled: {F.LIGHTRED_EX if config.nitro_sniper == False else F.LIGHTGREEN_EX}{config.nitro_sniper}")
     if config.nitro_sniper:
-      print(f"{F.LIGHTGREEN_EX}(+){F.LIGHTWHITE_EX} Sniping {len(self.bot.guilds)} servers\n")
-    
-  @vbot.Cog.listener()
-  async def on_message(self, msg):
-    # very half-assed way of doing it
-    
-    if msg.author == self.bot.user:
-      if msg.content.startswith("```yaml\n- No command called") or msg.content.startswith("```yaml\n- Command \""):
-        await delete_msg(msg)
+      print(f"{F.LIGHTGREEN_EX}(+){F.LIGHTWHITE_EX} Nitro sniping {len(self.bot.guilds)} servers\n")
 
   @vbot.Cog.listener()
   async def on_message_edit(self, before, after):
@@ -83,6 +74,7 @@ Running {F.CYAN}VBot{F.LIGHTBLACK_EX} on {F.LIGHTBLUE_EX}{self.bot.user}{F.LIGHT
     
     now = datetime.now()
     time = now.strftime("%H:%M:%S %d-%m-%Y")
+    if member == member.guild.me: return
     print(f"{F.LIGHTBLACK_EX}[{time}] {F.RED}User left a server {F.WHITE}| {F.LIGHTBLUE_EX}{member} - {member.guild.name} {F.LIGHTWHITE_EX}({member.id} - {member.guild.id})")
     
   @vbot.Cog.listener()
@@ -91,14 +83,16 @@ Running {F.CYAN}VBot{F.LIGHTBLACK_EX} on {F.LIGHTBLUE_EX}{self.bot.user}{F.LIGHT
     
     now = datetime.now()
     time = now.strftime("%H:%M:%S %d-%m-%Y")
+    if member == member.guild.me: return
     print(f"{F.LIGHTBLACK_EX}[{time}] {F.GREEN}User joined a server {F.WHITE}| {F.LIGHTBLUE_EX}{member} - {member.guild.name} {F.LIGHTWHITE_EX}(User: {member.id} - Server: {member.guild.id})")
     
   @vbot.Cog.listener()
-  async def on_command(self, ctx):
+  async def on_command(self, ctx: vbot.Context):
     if not config.logging: return
+    cmd = ctx.command
     msg = ctx.message
     
-    if msg.content.lower().startswith(f"{main.prefix}help"):
+    if cmd.name == "help":
         await delete_msg(msg)
     
     now = datetime.now()
