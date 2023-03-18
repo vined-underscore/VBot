@@ -1,5 +1,5 @@
 # Selfbot info
-- `93` commands
+- `95` commands
 - `7` categories
 - The versions start from `3.0` because it used to be private
 
