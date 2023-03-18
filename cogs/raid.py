@@ -57,7 +57,7 @@ class RaidCmds(
       
   @vbot.group(
     name = "spam",
-    description = f"Spams a message indefinitely until stopped by unreacting the spam command with ❌ or {main.prefix}spam stop",
+    description = f"Spams a message indefinitely until stopped by unreacting the spam command with ❌ or PREFIXspam stop",
     invoke_without_command = True
   )
   async def spam(self, ctx, *, message = "get spammed"):
@@ -77,7 +77,7 @@ class RaidCmds(
       
   @spam.command(
     name = "channel",
-    description = f"Spams a message indefinitely in the specified channel id until stopped by unreacting the spam command with ❌ or {main.prefix}spam stop (you need to surround the message with \"\". For example: \"get spammed\""
+    description = f"Spams a message indefinitely in the specified channel id until stopped by unreacting the spam command with ❌ or PREFIXspam stop (you need to surround the message with \"\". For example: \"get spammed\""
   )
   async def channel(self, ctx, message = "get spammed", channel_id: int = None):
     global is_spamming
@@ -106,7 +106,7 @@ class RaidCmds(
       
   @spam.command(
     name = "all",
-    description = f"Spams a message in every channel indefinitely until stopped by unreacting the spam command with ❌ or {main.prefix}spam stop"
+    description = f"Spams a message in every channel indefinitely until stopped by unreacting the spam command with ❌ or PREFIXspam stop"
   )
   async def all(self, ctx, *, message = "get spammed"):
     global is_spamming
@@ -129,7 +129,7 @@ class RaidCmds(
         
   @spam.command(
     name = "web",
-    description = f"Creates a webhook and spams it indefinitely until stopped by unreacting the spam command with ❌ or {main.prefix}spam stop (You will need to surround the name in quotation marks \"like this\")"
+    description = f"Creates a webhook and spams it indefinitely until stopped by unreacting the spam command with ❌ or PREFIXspam stop (You will need to surround the name in quotation marks \"like this\")"
   )
   async def web(self, ctx, name, *, message = "get spammed"):
     global is_spamming
@@ -306,7 +306,7 @@ class RaidCmds(
   )
   async def channel(self, ctx):
     msg = ctx.message
-    await msg.edit(content=f"```yaml\n- Incorrect usage. Correct usage: {main.prefix}help [channel]```", delete_after = 5)
+    await msg.edit(content=f"```yaml\n- Incorrect usage. Correct usage: {ctx.clean_prefix}help [channel]```", delete_after = 5)
   
   @channel.command(
     name = "delete",
@@ -364,7 +364,7 @@ class RaidCmds(
   )
   async def role(self, ctx):
     msg = ctx.message
-    await msg.edit(content=f"```yaml\n- Incorrect usage. Correct usage: {main.prefix}help [role]```", delete_after = 5)
+    await msg.edit(content=f"```yaml\n- Incorrect usage. Correct usage: {ctx.clean_prefix}help [role]```", delete_after = 5)
       
   @role.command(
     name = "create",
@@ -441,7 +441,7 @@ class RaidCmds(
   )
   async def emoji(self, ctx):
     msg = ctx.message
-    await msg.edit(content=f"```yaml\n- Incorrect usage. Correct usage: {main.prefix}help [channel]```", delete_after = 5)
+    await msg.edit(content=f"```yaml\n- Incorrect usage. Correct usage: {ctx.clean_prefix}help [channel]```", delete_after = 5)
     
   @emoji.command(
     name = "create",
