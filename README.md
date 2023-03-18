@@ -1,7 +1,7 @@
 # Selfbot info
 - `93` commands
 - `7` categories
-- The version is `3.0` because it used to be private
+- The versions start from `3.0` because it used to be private
 
 ## How to setup:
 - Download Python
