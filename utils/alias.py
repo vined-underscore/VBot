@@ -1,120 +1,120 @@
 def get_aliases(command: str) -> list:
-  aliases = {
-    "spamall": [
-        "sall"
-    ],
+    aliases = {
+        "spamall": [
+            "sall"
+        ],
 
-    "blockspam": [
-        "bs",
-        "bspam"
-    ],
-    
-    "channelcreate": [
-        "c",
-        "cre"
-    ],
-    
-    "channeldelete": [
-        "d",
-        "del"
-    ],
+        "blockspam": [
+            "bs",
+            "bspam"
+        ],
 
-    "rolecreate": [
-        "c",
-        "cre"
-    ],
+        "channelcreate": [
+            "c",
+            "cre"
+        ],
 
-    "roledelete": [
-        "d",
-        "del"
-    ],
-    
-    "massinvite": [
-        "massinv",
-        "spaminv",
-        "auditspam",
-        "auditbomb"
-    ],
+        "channeldelete": [
+            "d",
+            "del"
+        ],
 
-    "nuke": [
-        "destroy"
-    ],
+        "rolecreate": [
+            "c",
+            "cre"
+        ],
 
-    "logout": [
-        "exit",
-        "quit",
-        "off"
-    ],
+        "roledelete": [
+            "d",
+            "del"
+        ],
 
-    "eval": [
-        "evaluate",
-        "exec",
-        "execute",
-        "run",
-        "code"
-    ],
+        "massinvite": [
+            "massinv",
+            "spaminv",
+            "auditspam",
+            "auditbomb"
+        ],
 
-    "ping": [
-        "lat",
-        "latency",
-        "speed"
-    ],
+        "nuke": [
+            "destroy"
+        ],
 
-    "clear": [
-        "purge",
-        "clean",
-    ],
-    
-    "antireport": [
-        "ar"
-    ],
+        "logout": [
+            "exit",
+            "quit",
+            "off"
+        ],
 
-    "stealpfp": [
-        "pfpsteal",
-        "getpfp"
-    ],
-    
-    "tokengrab": [
-        "tgrab",
-        "otax",
-        "token-grab",
-        "token"
-    ],
-    
-    "ip": [
-        "ipgrab",
-        "getip",
-        "grabip"
-    ],
+        "eval": [
+            "evaluate",
+            "exec",
+            "execute",
+            "run",
+            "code"
+        ],
 
-    "user": [
-        "u"
-    ],
+        "ping": [
+            "lat",
+            "latency",
+            "speed"
+        ],
 
-    "server": [
-        "s"
-    ],
-    
-    "gen": [
-        "generate",
-        "fake"
-    ],
-    
-    "backup-f": [
-        "backup-friends",
-        "friends-backup",
-        "backupf"
-    ],
+        "clear": [
+            "purge",
+            "clean",
+        ],
 
-    "stopactivity": [
-        "stopstatus",
-        "stopact",
-        "stopst"
-    ],
-    
-    "copycat": [
-        "copy"
-    ]
-  }
-  
-  return aliases[command]
+        "antireport": [
+            "ar"
+        ],
+
+        "stealpfp": [
+            "pfpsteal",
+            "getpfp"
+        ],
+
+        "tokengrab": [
+            "tgrab",
+            "otax",
+            "token-grab",
+            "token"
+        ],
+
+        "ip": [
+            "ipgrab",
+            "getip",
+            "grabip"
+        ],
+
+        "user": [
+            "u"
+        ],
+
+        "server": [
+            "s"
+        ],
+
+        "gen": [
+            "generate",
+            "fake"
+        ],
+
+        "backup-f": [
+            "backup-friends",
+            "friends-backup",
+            "backupf"
+        ],
+
+        "stopactivity": [
+            "stopstatus",
+            "stopact",
+            "stopst"
+        ],
+
+        "copycat": [
+            "copy"
+        ]
+    }
+
+    return aliases[command]
