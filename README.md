@@ -1,4 +1,4 @@
-# Selfbot info
+# VBot v3.2.0
 - `94` commands
 - `7` categories
 - The versions start from `3.0` because it used to be private
