@@ -2,13 +2,15 @@ import random
 
 __api__ = "https://discord.com/api/v9"
 
+
 def randstr(length: int) -> str:
     alpha = "abcdefghijklmnopqrstuvwxyz0123456789"
     text = ''
     for _ in range(0, length):
         text += alpha[random.randint(0, len(alpha) - 1)]
-      
+
     return text
+
 
 def headers(bot_token: str) -> dict:
     return {
