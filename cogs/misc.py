@@ -145,7 +145,7 @@ class MiscCmds(
         latency = round(self.bot.latency * 1000)
 
         await msg.edit(content=f"```yaml\nThe bot's latency is {latency}ms```", delete_after=5)
-        
+
     @vbot.command(
         name="botstats",
         description="Sends information about the PC and bot"
@@ -179,7 +179,7 @@ class MiscCmds(
     * Used Disk Space: {format_size(disk.used)}
     * Free Disk Space: {format_size(disk.free)}
     * Disk Usage: {disk.percent}%```""", delete_after=15)
-            
+
 
 if __name__ == "__main__":
     print("You need to run main.py to run the bot")
