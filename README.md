@@ -18,3 +18,7 @@ Logo made in 10 minutes using paint.net, thanks for asking
 ### Author info
 - Developed by me and me only
 - The only commands that aren't mine are `eval` and `hypesquad` (hypesquad is from [Zeenode](https://github.com/zeenode/selfbot) and the eval command is from some youtube tutorial vid)
+    
+    
+# Risk
+- blah blah against TOS and everything use this at your own risk
