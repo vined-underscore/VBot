@@ -6,7 +6,7 @@ invisible_cogs = ['nitro sniper', 'events', 'errorhandler']
 
 
 class HelpCommand(vbot.HelpCommand):
-    async def send_bot_help(self, mapping):
+    async def send_bot_help(self, mapping) -> None:
         desc = []
         for cog, cmds in mapping.items():
             if cog is None or cog.qualified_name.lower() in invisible_cogs:
@@ -32,7 +32,7 @@ class HelpCommand(vbot.HelpCommand):
 !# The category name must be case-sensitive. Example: "{self.context.clean_prefix}help Raiding"```"""
         await self.context.message.edit(content=msg, delete_after=15)
 
-    async def send_group_help(self, group: vbot.Group):
+    async def send_group_help(self, group: vbot.Group) -> None:
         desc = ""
         cmd_desc = \
             f"Name: {group.name}\nCategory: {group.cog_name}\nInfo: {group.description.replace('PREFIX', self.context.clean_prefix)}\n\n" \
@@ -40,9 +40,14 @@ class HelpCommand(vbot.HelpCommand):
             f"Usage: {self.context.clean_prefix}{group.name} {group.signature}" if not group.full_parent_name else f"Usage: {self.context.clean_prefix}{group.full_parent_name} {group.name} {group.signature}"
 
         cmds = await self.filter_commands(group.commands, sort=True)
-        for c in cmds:
-            desc += f"  - {self.context.clean_prefix}{c.qualified_name}: {c.description.replace('PREFIX', self.context.clean_prefix) or 'No help information'}\n"
-
+        for idx, c in enumerate(cmds):
+            desc += f"  - {self.context.clean_prefix}{c.qualified_name}: {c.description.replace('PREFIX', self.context.clean_prefix) or 'No help information'}"
+            
+            if len(c.description) > 50 and idx != len(cmds) - 1:
+                desc += f"\n\n"
+            elif idx != len(cmds) - 1:
+                desc += f"\n"
+            
         msg = f"""```yaml
 > Made by {self.context.bot.get_user(main.__author_id__)} | {main.__author_id__} <
 
@@ -61,12 +66,10 @@ Group Commands:
 !# Run {self.context.clean_prefix}{self.invoked_with} {group.name} [subcommand] to learn more about a subcommand```"""
         await self.context.message.edit(content=msg, delete_after=15)
 
-    async def send_command_help(self, cmd: vbot.Command):
-        desc = \
-            f"Name: {cmd.name}\nCategory: {cmd.cog_name}\nInfo: {cmd.description.replace('PREFIX', self.context.clean_prefix)}\n\n" \
-            f"Aliases:\n - {', '.join(cmd.aliases) if cmd.aliases else 'None'}\n\n" \
-            f"Usage: {self.context.clean_prefix}{cmd.name} {cmd.signature}" if not cmd.full_parent_name else f"Usage: {self.context.clean_prefix}{cmd.full_parent_name} {cmd.name} {cmd.signature}"
-
+    async def send_command_help(self, cmd: vbot.Command) -> None:
+        desc = f"""Name: {cmd.name}\nCategory: {cmd.cog_name}\nInfo: {cmd.description.replace('PREFIX', self.context.clean_prefix)}\n
+Aliases:\n - {', '.join(cmd.aliases) if cmd.aliases else 'None'}\n
+Usage: {f"{self.context.clean_prefix}{cmd.name} {cmd.signature}" if not cmd.full_parent_name else f"{self.context.clean_prefix}{cmd.full_parent_name} {cmd.name} {cmd.signature}"}"""
         msg = f"""```yaml
 > Made by {self.context.bot.get_user(main.__author_id__)} | {main.__author_id__} <
 
@@ -81,7 +84,7 @@ Command Info: {cmd.qualified_name}
 !# [optional], <required>, "=" indicates the default value```"""
         await self.context.message.edit(content=msg, delete_after=15)
 
-    async def send_cog_help(self, cog: vbot.Cog):
+    async def send_cog_help(self, cog: vbot.Cog) -> None:
         cmds = await self.filter_commands(cog.get_commands(), sort=True)
         cmds = "\n".join(
             f"- {self.context.clean_prefix}{cmd.name}: {cmd.description.replace('PREFIX', self.context.clean_prefix)}" for cmd in cmds)
@@ -108,7 +111,7 @@ Category Info: {cog.qualified_name}
 
         return f"```yaml\n- Command \"{command.qualified_name}\" has no subcommands.```"
 
-    async def send_error_message(self, error: str):
+    async def send_error_message(self, error: str) -> None:
         await self.context.message.edit(error, delete_after=5)
 
 
