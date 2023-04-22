@@ -1,5 +1,6 @@
 <p align="center">
     <img width="480px" height="auto" src="https://media.discordapp.net/attachments/980945786051362848/1099436881055338536/vbot.jpg?width=557&height=418" align="center" alt="VBot" />
+Logo made in 10 minutes using paint.net, thanks for asking
 
 # Selfbot info
 - `105` commands
