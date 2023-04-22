@@ -17,12 +17,12 @@ Logo made in 10 minutes using paint.net, thanks for asking
     - Run `main.py`
 
 2. For normal people:
-    - Open cmd
-    - ```git clone https://github.com/vined-underscore/VBot
-         cd VBot
-         python install.py```
-    - Put stuff in `config.py`
-    - `python main.py`
+- Open cmd
+- ```git clone https://github.com/vined-underscore/VBot
+cd VBot
+python install.py```
+- Put stuff in `config.py`
+- `python main.py`
 
 ### Author info
 - Developed by me and me only
