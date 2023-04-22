@@ -1,5 +1,4 @@
-from typing import List, Any, AsyncGenerator, Optional
-import asyncio
+from typing import Any, AsyncGenerator, Sequence, Tuple
 import math
 
 
@@ -8,65 +7,70 @@ class AsyncPaginator:
 
     Parameters
     -----------
-    iterable: List[:class:`Any`]
+    iterable: Sequence[:class:`Any`]
         The iterable to paginate.
-        
+
     page_size: :class:`int`
         The number of items to include in each page.
     """
 
-    def __init__(self, iterable: List[Any], page_size: int = 5) -> None:
-        self.iterable: List[Any] = iterable
+    def __init__(self, iterable: Sequence[Any], page_size: int = 5) -> None:
+        self.iterable: Sequence[Any] = iterable
         self.page_size: int = page_size
-        self.num_pages: Optional[int] = None
+        self.num_pages: int = -1
 
     async def count(self) -> int:
         """Returns the total number of pages in the iterable.
-        
+
         Returns
-        ---------
-        :class:`int`
+        -------
+        int
             The count of pages.
         """
-            
-        if self.num_pages is None:
+
+        if self.num_pages == -1:
             self.num_pages = math.ceil(len(self.iterable) / self.page_size)
         return self.num_pages
 
-    async def get_page(self, page_num: int) -> List[Any]:
+    async def get_page(self, page_num: int) -> Sequence[Any]:
         """Returns a list of items for the specified page number.
-        
+
+        Parameters
+        ----------
+        page_num: int
+            The page number to retrieve.
+
         Returns
-        ---------
-        List[:class:`Any`]
+        -------
+        Sequence[:class:`Any`]
             The page at the index.
         """
-            
-        start_index = (page_num - 1) * self.page_size
-        end_index = start_index + self.page_size
-        page_data = self.iterable[start_index:end_index]
+
+        index_range: Tuple[int, int] = (page_num - 1) * self.page_size, page_num * self.page_size
+        page_data: Sequence[Any] = self.iterable[slice(*index_range)]
         return page_data
 
-    async def iterate_pages(self) -> AsyncGenerator[List[Any], None]:
+    async def iterate_pages(self) -> AsyncGenerator[Sequence[Any], None]:
         """Iterates over all pages of the iterable asynchronously, yielding a list of items for each page.
-        
-        Returns
-        ---------
-        AsyncGenerator[List[:class:`Any`], `None`]
-            An async generator with all of the pages.
-        """
-        
-        async for page_num in range(1, await self.count() + 1):
-            yield await self.get_page(page_num)
 
-    async def __aiter__(self) -> AsyncGenerator[List[Any], None]:
-        """Allows for intuitive iteration over pages using async for.
-        
         Returns
-        ---------
-        AsyncGenerator[List[:class:`Any`], `None`]
+        -------
+        AsyncGenerator[Sequence[:class:`Any`], None]
             An async generator with all of the pages.
         """
-        
+
+        async with self.count() as count:
+            for page_num in range(1, count + 1):
+                yield await self.get_page(page_num)
+
+    async def __aiter__(self) -> AsyncGenerator[Sequence[Any], None]:
+        """Allows for intuitive iteration over pages using async for.
+
+        Returns
+        -------
+        AsyncGenerator[Sequence[:class:`Any`], None]
+            An async generator with all of the pages.
+        """
+
         async for page in self.iterate_pages():
             yield page
