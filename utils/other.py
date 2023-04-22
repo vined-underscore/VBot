@@ -50,7 +50,7 @@ async def log_error(ctx: commands.Context, error, message: str, unknown: bool=Fa
         await ctx.message.delete()
 
 
-def get_first_channel(guild: discord.Guild) -> Union[discord.TextChannel, None]:
+def get_first_channel(guild: discord.Guild) -> Union[discord.TextChannel, str]:
     channels = [channel for channel in guild.text_channels if channel.permissions_for(guild.me).read_messages]
     if channels != []:
         return channels[0]
