@@ -42,12 +42,12 @@ class HelpCommand(vbot.HelpCommand):
         cmds = await self.filter_commands(group.commands, sort=True)
         for idx, c in enumerate(cmds):
             desc += f"  - {self.context.clean_prefix}{c.qualified_name}: {c.description.replace('PREFIX', self.context.clean_prefix) or 'No help information'}"
-            
+
             if len(c.description) > 50 and idx != len(cmds) - 1:
                 desc += f"\n\n"
             elif idx != len(cmds) - 1:
                 desc += f"\n"
-            
+
         msg = f"""```yaml
 > Made by {self.context.bot.get_user(main.__author_id__)} | {main.__author_id__} <
 

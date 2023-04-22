@@ -260,7 +260,7 @@ Generated {amount} IDs
             await msg.edit(content=f"""```yaml
 Generated {amount} nitro code(s)
 {nl.join(codes)}```""")
-    
+
     @gen.command(
         name="invites",
         description="Generates Discord invites",

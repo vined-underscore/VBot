@@ -7,6 +7,7 @@ from selfcord.ext import commands as vbot
 from utils import other
 from utils.other import log
 
+
 class Events(
         vbot.Cog,
         name="Events"):
@@ -19,12 +20,14 @@ class Events(
         await self.bot.full_banner()
         if config.logging["channel"]["webhook_url"] == "":
             return
-        
+
         async with aiohttp.ClientSession() as session:
             try:
-                self.webhook = discord.Webhook.from_url(config.logging["channel"]["webhook_url"], session=session)
+                self.webhook = discord.Webhook.from_url(
+                    config.logging["channel"]["webhook_url"], session=session)
             except:
-                print(f"{F.RED}The webhook in the logging config is invalid. Change it to a valid webhook or blank to disable it.")
+                print(
+                    f"{F.RED}The webhook in the logging config is invalid. Change it to a valid webhook or blank to disable it.")
                 exit()
 
     @vbot.Cog.listener()
@@ -39,16 +42,18 @@ class Events(
     async def on_guild_remove(self, guild: discord.Guild):
         if not config.logging["is_logging"]:
             return
-        
+
         self.bot.total_logs += 1
         if config.logging["channel"]["webhook_url"] != "":
             async with aiohttp.ClientSession() as session:
-                webhook = discord.Webhook.from_url(config.logging["channel"]["webhook_url"], session=session)
+                webhook = discord.Webhook.from_url(
+                    config.logging["channel"]["webhook_url"], session=session)
                 embed = discord.Embed(
-                    title = "Server Leave Logging",
-                    color = discord.Color.red()
+                    title="Server Leave Logging",
+                    color=discord.Color.red()
                 )
-                embed.add_field(name="Server", value=f"`{guild.name}` ({guild.id})", inline=False)
+                embed.add_field(
+                    name="Server", value=f"`{guild.name}` ({guild.id})", inline=False)
                 embed.timestamp = datetime.utcnow()
                 await webhook.send(username="VBot Logging", embed=embed)
 
@@ -58,7 +63,7 @@ class Events(
     async def on_guild_join(self, guild: discord.Guild):
         if not config.logging["is_logging"]:
             return
-        
+
         self.bot.total_logs += 1
         if config.logging["channel"]["webhook_url"] != "":
             channel = other.get_first_channel(guild)
@@ -66,16 +71,19 @@ class Events(
                 channel = channel.jump_url
             else:
                 channel = channel
-                
+
             async with aiohttp.ClientSession() as session:
-                webhook = discord.Webhook.from_url(config.logging["channel"]["webhook_url"], session=session)
-                    
+                webhook = discord.Webhook.from_url(
+                    config.logging["channel"]["webhook_url"], session=session)
+
                 embed = discord.Embed(
-                    title = "Server Join Logging",
-                    color = discord.Color.green()
+                    title="Server Join Logging",
+                    color=discord.Color.green()
                 )
-                embed.add_field(name="Server", value=f"`{guild.name}` ({guild.id})", inline=False)
-                embed.add_field(name="Server Link", value=channel, inline=False)
+                embed.add_field(
+                    name="Server", value=f"`{guild.name}` ({guild.id})", inline=False)
+                embed.add_field(name="Server Link",
+                                value=channel, inline=False)
                 embed.timestamp = datetime.utcnow()
                 await webhook.send(username="VBot Logging", embed=embed)
 
@@ -96,16 +104,20 @@ class Events(
                 channel = channel.jump_url
             else:
                 channel = channel
-                
+
             async with aiohttp.ClientSession() as session:
-                webhook = discord.Webhook.from_url(config.logging["channel"]["webhook_url"], session=session)
+                webhook = discord.Webhook.from_url(
+                    config.logging["channel"]["webhook_url"], session=session)
                 embed = discord.Embed(
-                    title = "Member Leave Logging",
-                    color = discord.Color.red()
+                    title="Member Leave Logging",
+                    color=discord.Color.red()
                 )
-                embed.add_field(name="User", value=f"`{member}` ({member.id})", inline=False)
-                embed.add_field(name="Server", value=f"`{member.guild.name}` ({member.guild.id})", inline=False)
-                embed.add_field(name="Server Link", value=channel, inline=False)
+                embed.add_field(
+                    name="User", value=f"`{member}` ({member.id})", inline=False)
+                embed.add_field(
+                    name="Server", value=f"`{member.guild.name}` ({member.guild.id})", inline=False)
+                embed.add_field(name="Server Link",
+                                value=channel, inline=False)
                 embed.timestamp = datetime.utcnow()
                 await webhook.send(username="VBot Logging", embed=embed)
 
@@ -118,7 +130,7 @@ class Events(
 
         if member._user == self.bot.user:
             return
-        
+
         self.bot.total_logs += 1
         if config.logging["channel"]["webhook_url"] != "":
             channel = other.get_first_channel(member.guild)
@@ -126,16 +138,20 @@ class Events(
                 channel = channel.jump_url
             else:
                 channel = channel
-                
+
             async with aiohttp.ClientSession() as session:
-                webhook = discord.Webhook.from_url(config.logging["channel"]["webhook_url"], session=session)
+                webhook = discord.Webhook.from_url(
+                    config.logging["channel"]["webhook_url"], session=session)
                 embed = discord.Embed(
-                    title = "Member Join Logging",
-                    color = discord.Color.green()
+                    title="Member Join Logging",
+                    color=discord.Color.green()
                 )
-                embed.add_field(name="User", value=f"`{member}` ({member.id})", inline=False)
-                embed.add_field(name="Server", value=f"`{member.guild.name}` ({member.guild.id})", inline=False)
-                embed.add_field(name="Server Link", value=channel, inline=False)
+                embed.add_field(
+                    name="User", value=f"`{member}` ({member.id})", inline=False)
+                embed.add_field(
+                    name="Server", value=f"`{member.guild.name}` ({member.guild.id})", inline=False)
+                embed.add_field(name="Server Link",
+                                value=channel, inline=False)
                 embed.timestamp = datetime.utcnow()
                 await webhook.send(username="VBot Logging", embed=embed)
 
@@ -144,24 +160,29 @@ class Events(
     @vbot.Cog.listener()
     async def on_command(self, ctx: vbot.Context):
         self.bot.total_cmds += 1
-        
+
         if not config.logging["is_logging"]:
             return
 
         self.bot.total_logs += 1
         if config.logging["channel"]["webhook_url"] != "":
             async with aiohttp.ClientSession() as session:
-                webhook = discord.Webhook.from_url(config.logging["channel"]["webhook_url"], session=session)
+                webhook = discord.Webhook.from_url(
+                    config.logging["channel"]["webhook_url"], session=session)
                 embed = discord.Embed(
-                    title = "Command Logging",
-                    color = discord.Color.random()
+                    title="Command Logging",
+                    color=discord.Color.random()
                 )
-                embed.add_field(name="Command", value=f"`{ctx.message.content}`", inline=False)
-                if not isinstance(ctx.channel, discord.GroupChannel): 
-                    embed.add_field(name="Server", value=f"`{ctx.guild.name}` ({ctx.guild.id})", inline=False)
-                
-                embed.add_field(name="Channel", value=f"<#{ctx.channel.id}>", inline=False)
-                embed.add_field(name="Message Link", value=f"{ctx.message.jump_url}", inline=False)
+                embed.add_field(
+                    name="Command", value=f"`{ctx.message.content}`", inline=False)
+                if not isinstance(ctx.channel, discord.GroupChannel):
+                    embed.add_field(
+                        name="Server", value=f"`{ctx.guild.name}` ({ctx.guild.id})", inline=False)
+
+                embed.add_field(
+                    name="Channel", value=f"<#{ctx.channel.id}>", inline=False)
+                embed.add_field(name="Message Link",
+                                value=f"{ctx.message.jump_url}", inline=False)
                 embed.timestamp = datetime.utcnow()
                 await webhook.send(username="VBot Logging", embed=embed)
 
