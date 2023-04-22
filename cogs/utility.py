@@ -537,7 +537,7 @@ Found {len(all) if all != None else 0} people with the same tag:
                 hostname = data["data"]["hostname"]
             except KeyError:
                 hostname = None
-            
+
             await msg.edit(content=f"""```yaml
 IP Address: {data["query"]}
 Hostname: {hostname}
@@ -614,9 +614,9 @@ Security:
             date = msg.created_at
             content = msg.content
             channel = ctx.channel
-            atts = [att.url for att in msg.attachments]     
+            atts = [att.url for att in msg.attachments]
             nl = "\n"
-            
+
             try:
                 reply = await msg.channel.fetch_message(msg.reference.message_id)
             except:
@@ -645,7 +645,6 @@ Security:
 
         except:
             pass
-        
 
     @vbot.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
@@ -724,12 +723,12 @@ Security:
 
         except:
             return await ctx.send("```yaml\n- Error: Invalid server ID```", delete_after=5)
-    
+
     @tasks.loop(hours=2)
     async def autobump(self):
         if self.bump["bumping"] and self.bump["cmd_obj"]:
             await self.bump["cmd_obj"].__call__()
-    
+
     @vbot.command(
         name="abump",
         description="Starts or stops auto disboard bump in the selected channel"
@@ -737,16 +736,16 @@ Security:
     async def abump(self, ctx: vbot.Context, channel: Optional[discord.TextChannel]):
         msg = ctx.message
         channel: discord.TextChannel = channel or ctx.channel
-        
+
         if not isinstance(channel, discord.TextChannel):
             return await msg.edit(content="```yaml\n- Channel cannot be a DM.```", delete_after=5)
-        
+
         try:
             disboard = await channel.guild.fetch_member(302050872383242240)
-            
+
         except discord.NotFound:
             return await msg.edit(content="```yaml\n- DISBOARD is not in the server.```", delete_after=5)
-            
+
         found = False
         async for cmd in channel.slash_commands():
             if cmd.application_id == disboard.id:
@@ -756,7 +755,7 @@ Security:
                     if self.bump["bumping"] == False:
                         await msg.edit(content="```yaml\n- Canceled autobump task.```", delete_after=5)
                         await self.autobump.cancel()
-                
+
                     else:
                         await msg.edit(content="```yaml\n+ Started autobump task.```", delete_after=5)
                         self.bump["cmd_obj"] = cmd
@@ -764,7 +763,7 @@ Security:
 
         if not found:
             await msg.edit(content="```yaml\n- DISBOARD can't be accessed in the selected channel.```", delete_after=5)
-                    
+
 
 if __name__ == "__main__":
     print("You need to run main.py to run the bot")
