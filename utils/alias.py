@@ -1,4 +1,6 @@
-def get_aliases(command: str) -> list:
+from typing import List
+
+def get_aliases(command: str) -> List[str]:
     aliases = {
         "spamall": [
             "sall"
