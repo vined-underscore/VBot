@@ -4,6 +4,7 @@ import main
 import asyncio
 import aiohttp
 from selfcord.ext import commands as vbot
+from selfcord.ext import tasks
 from colorama import Fore
 from utils import req
 from utils import alias
@@ -16,14 +17,18 @@ class UtilityCmds(
         vbot.Cog,
         name="Utils",
         description="Various useful commands"):
-    def __init__(self, bot):
-        self.bot: vbot.Bot = bot
+    def __init__(self, bot: vbot.Bot):
+        self.bot = bot
         self.is_clear = False
         self.snipe_message = {}
         self.snipe_message_edit = {}
         self.msgs = 0
         self.deleted = 0
         self.messages = []
+        self.bump = {
+            "bumping": False,
+            "cmd_obj": None
+        }
 
     @vbot.group(
         name="clear",
@@ -93,7 +98,7 @@ class UtilityCmds(
 
                 if not channel.permissions_for(guild.me).send_messages:
                     print(
-                        f"{Fore.RED}[-]{Fore.LIGHTWHITE_EX} User doesn't have message access in {Fore.LIGHTBLUE_EX}#{channel.name}{Fore.LIGHTWHITE_EX}, skipping...\n")
+                        f"{Fore.RED}[-]{Fore.LIGHTWHITE_EX} User doesnt have message access in {Fore.LIGHTBLUE_EX}#{channel.name}{Fore.LIGHTWHITE_EX}, skipping...\n")
                     continue
 
                 try:
@@ -110,7 +115,7 @@ class UtilityCmds(
 
                 except discord.Forbidden:
                     print(
-                        f"{Fore.RED}[-]{Fore.LIGHTWHITE_EX} User doesn't have access in {Fore.LIGHTBLUE_EX}#{channel.name}{Fore.LIGHTWHITE_EX}, skipping...\n")
+                        f"{Fore.RED}[-]{Fore.LIGHTWHITE_EX} User doesnt have access in {Fore.LIGHTBLUE_EX}#{channel.name}{Fore.LIGHTWHITE_EX}, skipping...\n")
                     await asyncio.sleep(1)
                     continue
 
@@ -173,13 +178,13 @@ class UtilityCmds(
         msg = ctx.message
         user = user or ctx.author
 
-        invalid_chars = "#%&{}\<>*?/ $!'\":@+`|="
+        invalid_chars = "#%&{}\<>*?/ $!\":@+`|="
         username = str(user)
         for char in invalid_chars:
             if char in username:
                 username = username.replace(char, "_")
 
-        with open(f"./info/users/USER_INFO {username}.txt", "w") as f:
+        with open(f"./info/users/USER_INFO {username}.txt", "w", encoding="utf-8") as f:
             req = await self.bot.http.request(
                 discord.http.Route(
                     "GET",
@@ -227,7 +232,7 @@ class UtilityCmds(
         except:
             return await ctx.send("```yaml\n- Error: Invalid server ID```", delete_after=5)
 
-        invalid_chars = "#%&{}\<>*?/ $!'\":@+`|="
+        invalid_chars = "#%&{}\<>*?/ $!\":@+`|="
         servername = str(guild.name)
         for char in invalid_chars:
             if char in servername:
@@ -264,7 +269,7 @@ class UtilityCmds(
         else:
             pass
 
-        with open(f"./info/servers/SERVER_INFO {servername}.txt", "w") as f:
+        with open(f"./info/servers/SERVER_INFO {servername}.txt", "w", encoding="utf-8") as f:
             now = datetime.now().astimezone()
             created_at_server = guild.created_at
             days_ago_server = now - created_at_server
@@ -322,7 +327,7 @@ class UtilityCmds(
             try:
                 js = await r_user.json()
                 try:
-                    n = nitro_types[str(js['premium_type'])]
+                    n = nitro_types[str(js["premium_type"])]
 
                 except Exception as e:
                     n = "None"
@@ -334,28 +339,26 @@ class UtilityCmds(
                         username = username.replace(char, "_")
 
                 info = f"""- Token: {token}
-- Username: {js['username']}#{js['discriminator']}
-- ID: {js['id']}
-- Email: {js['email']}
-- Phone: {js['phone']}
-- Avatar URL: https://cdn.discordapp.com/avatars/{js['id']}/{js['avatar']}.png?size=2048
-- Banner URL: https://cdn.discordapp.com/banners/{js['id']}/{js['banner']}.png?size=2048
-- Bio: {None if js['bio'] == '' else js['bio']}
-- Locale: {js['locale']}
-- 2FA Enabled: {js['mfa_enabled']}
-- Verified: {js['verified']}
+- Username: {js["username"]}#{js["discriminator"]}
+- ID: {js["id"]}
+- Email: {js["email"]}
+- Phone: {js["phone"]}
+- Avatar URL: https://cdn.discordapp.com/avatars/{js["id"]}/{js["avatar"]}.png?size=2048
+- Banner URL: https://cdn.discordapp.com/banners/{js["id"]}/{js["banner"]}.png?size=2048
+- Bio: {None if js["bio"] == "" else js["bio"]}
+- Locale: {js["locale"]}
+- 2FA Enabled: {js["mfa_enabled"]}
+- Verified: {js["verified"]}
 - Nitro Subscription: {n}"""
 
-                with open(f"./info/tokens/TOKEN_INFO {username}.txt", "w") as f:
+                with open(f"./info/tokens/TOKEN_INFO {username}.txt", "w", encoding="utf-8") as f:
                     f.write(info)
 
                 with open(f"./info/tokens/TOKEN_INFO {username}.txt", "rb") as f:
                     await ctx.send(content=f"```yaml\n{info}```", file=discord.File(f))
 
             except Exception as e:
-                await ctx.send(f"""```yaml
-  - Error: {e}
-  ```""", delete_after=5)
+                await ctx.send(f"""```yaml\n- Error: {e}```""", delete_after=5)
 
         await msg.delete(delay=5)
 
@@ -416,7 +419,7 @@ class UtilityCmds(
             async with aiohttp.ClientSession() as http:
                 try:
                     await http.post(
-                        f'{__api__}/hypesquad/online',
+                        f"{__api__}/hypesquad/online",
                         headers=headers,
                         json=payload)
                     return await msg.edit(content=f"```yaml\n+ Succesfully set hypesquad to {house}```", delete_after=5)
@@ -428,7 +431,7 @@ class UtilityCmds(
             async with aiohttp.ClientSession() as http:
                 try:
                     await http.delete(
-                        f'{__api__}/hypesquad/online',
+                        f"{__api__}/hypesquad/online",
                         headers=headers
                     )
                     return await msg.edit(content=f"```yaml\n+ Succesfully removed hypesquad```", delete_after=5)
@@ -438,9 +441,8 @@ class UtilityCmds(
 
     @vbot.command(
         name="channelclear",
-        description="Fully clears a channel in an instant"
+        description="Fully clears a channel"
     )
-    # made by me frfr
     async def channelclear(self, ctx: vbot.Context, channel=Optional[discord.TextChannel]):
         msg = ctx.message
 
@@ -448,26 +450,16 @@ class UtilityCmds(
         guild = channel.guild
 
         try:
-            headers = req.headers(main.token)
             w_names = [w.name for w in await channel.webhooks()]
-
-            pos = channel.position
-            topic = channel.topic
-            cat = channel.category
-            name = channel.name
-            perms = channel.overwrites
-            slowmode = channel.slowmode_delay
-            nsfw = channel.is_nsfw
-            sys_channel = channel == guild.system_channel
 
             await channel.delete()
             chann = await guild.create_text_channel(
-                name=name,
-                overwrites=perms,
-                slowmode_delay=slowmode,
-                position=pos,
-                category=cat,
-                topic=topic
+                name=channel.name,
+                overwrites=channel.overwrites,
+                slowmode_delay=channel.slowmode_delay,
+                position=channel.position,
+                category=channel.category,
+                topic=channel.topic
             )
 
             await asyncio.sleep(0.5)
@@ -475,16 +467,11 @@ class UtilityCmds(
             for w_name in w_names:
                 await chann.create_webhook(name=w_name)
 
-            await chann.edit(nsfw=nsfw)
+            await chann.edit(nsfw=channel.is_nsfw)
 
+            sys_channel = channel == guild.system_channel
             if sys_channel == True:
-                async with aiohttp.ClientSession() as http:
-                    await http.patch(
-                        f"{__api__}/guilds/{guild.id}",
-                        headers=headers,
-                        json={
-                            "system_channel_id": chann.id
-                        })
+                await guild.edit(system_channel=chann)
 
         except Exception as e:
             return await msg.edit(content=f"```yaml\n- An error has occurred: {e}```", delete_after=5)
@@ -508,8 +495,8 @@ class UtilityCmds(
         nl = "\n"
 
         await msg.edit(content=f"""```yaml
-Found {len(all)} people with the same tag:
-{nl.join(all)}```""")
+Found {len(all) if all != None else 0} people with the same tag:
+{nl.join(all) if all != None else all}```""")
 
     @vbot.command(
         name="geoip",
@@ -520,35 +507,65 @@ Found {len(all)} people with the same tag:
 
         await msg.edit(content="```yaml\nGathering info...```")
 
-        url = f"http://ip-api.com/json/{ip}?fields=12067839"
-        url_2 = f"https://ipapi.co/{ip}/json/"
-
         try:
             async with aiohttp.ClientSession() as http:
-                r = await http.get(url)
-                r_2 = await http.get(url_2)
+                r = await http.get(f"http://ip-api.com/json/{ip}?fields=12067839")
+                r_2 = await http.get(f"https://ipapi.co/{ip}/json/")
+                r_3 = await http.get(
+                    f"https://ipinfo.io/widget/demo/{ip}",
+                    headers={
+                        "Accept": "*/*",
+                        "Accept-Encoding": "gzip, deflate, br",
+                        "Accept-Language": "en-US,en;q=0.5",
+                        "Alt-Used": "ipinfo.io",
+                        "Connection": "keep-alive",
+                        "Content-Type": "application/json",
+                        "Host": "ipinfo.io",
+                        "Referer": "https://ipinfo.io/",
+                        "Sec-Fetch-Dest": "empty",
+                        "Sec-Fetch-Mode": "cors",
+                        "Sec-Fetch-Site": "same-origin",
+                        "User-Agent": "Mozilla/5.0 (Linux; Android 9; Redmi Note 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4641.79 Mobile Safari/537.36"
+                    })
 
-                ip_json = await r.json()
-                ip2_json = await r_2.json()
+                ip1 = await r.json()
+                ip2 = await r_2.json()
+                ip3 = await r_3.json()
+                data = {**ip1, **ip2, **ip3}
 
+            try:
+                hostname = data["data"]["hostname"]
+            except KeyError:
+                hostname = None
+            
             await msg.edit(content=f"""```yaml
-IP Address: {ip_json['query']}
-ISP: {ip2_json['org']}
-Country: {ip_json['country']}
-Country Code: {ip_json['countryCode']}
-Country Calling Code: {ip2_json['country_calling_code']}
-Region: {ip_json['regionName']}
-City: {ip_json['city']}
-ZIP Code: {ip_json['zip']}
-Latitude: {ip_json['lat']}
-Longitude: {ip_json['lon']}
-Continent: {ip_json['continent']}
-Continent Code: {ip_json['continentCode']}
-Timezone: {ip_json['timezone']}```
+IP Address: {data["query"]}
+Hostname: {hostname}
+Country: {data["country"]}
+Country Code: {data["countryCode"]}
+Country Calling Code: {data["country_calling_code"]}
+Region: {data["regionName"]}
+City: {data["city"]}
+ZIP Code: {data["zip"]}
+Location (lat long): {data["lat"]} {data["lon"]}
+Continent: {data["continent"]}
+Continent Code: {data["continentCode"]}
+Timezone: {data["timezone"]}
+ISP: 
+  - Name: {data["data"]["asn"]["name"]}
+  - ASN: {data["data"]["asn"]["asn"]}
+  - Domain: {data["data"]["asn"]["domain"]}
+  - Route: {data["data"]["asn"]["route"]}
+  - Address: {data["data"]["abuse"]["address"]}
+  
+Security:
+  - VPN: {data["data"]["privacy"]["vpn"]}
+  - Proxy: {data["data"]["privacy"]["proxy"]}
+  - Tor: {data["data"]["privacy"]["tor"]}```
 """)
 
-        except KeyError:
-            return await msg.edit(content=f"```yaml\n- Invalid IP Address```", delete_after=5)
+        except KeyError as e:
+            return await msg.edit(content=f"```yaml\n- Invalid IP Address: {e}```", delete_after=5)
 
         except Exception as e:
             return await msg.edit(content=f"```yaml\n- An unknown error occurred while gathering IP Address information: {e}```", delete_after=5)
@@ -573,7 +590,7 @@ Timezone: {ip_json['timezone']}```
 
     @vbot.command(
         name="log",
-        description="Puts an amount of messages in the specified channel or the current channel in a file."
+        description="Saves an amount of messages in the specified channel or the current channel"
     )
     async def log(self, ctx: vbot.Context, amount: int, channel_id: Optional[int]):
         msg = ctx.message
@@ -597,10 +614,18 @@ Timezone: {ip_json['timezone']}```
             date = msg.created_at
             content = msg.content
             channel = ctx.channel
+            atts = [att.url for att in msg.attachments]     
+            nl = "\n"
+            
+            try:
+                reply = await msg.channel.fetch_message(msg.reference.message_id)
+            except:
+                reply = ""
 
             message = f"""
   {author} | {date}
-  - {content}\n"""
+  - {content}{f"{nl}  - Attachments: {', '.join(atts)}" if msg.attachments else ""}
+  {f"- Replying to: {reply.author}" if reply != "" else ""}\n"""
             fullstr += message
             count += 1
 
@@ -608,6 +633,7 @@ Timezone: {ip_json['timezone']}```
             f.write(fullstr)
 
         with open(f"./info/logs/LOG_INFO #{channel} {count}.txt", "rb") as f:
+            await msg.delete()
             await ctx.send(f"```yaml\n+ Succesfully saved {count} messages```", file=discord.File(f))
 
     @vbot.Cog.listener()
@@ -619,6 +645,7 @@ Timezone: {ip_json['timezone']}```
 
         except:
             pass
+        
 
     @vbot.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
@@ -643,7 +670,7 @@ Timezone: {ip_json['timezone']}```
         channel = ctx.channel
         try:
             message = self.snipe_message[channel.id]
-            clean = message.content.replace('`', '')
+            clean = message.content.replace("`", "")
             await msg.edit(content=f"```yaml\n- {message.author} | {message.created_at}\n   {clean}```")
 
         except KeyError:
@@ -660,11 +687,11 @@ Timezone: {ip_json['timezone']}```
 
         try:
             obj = self.snipe_message_edit[channel.id]
-            before = obj['before']
-            after = obj['after']
+            before = obj["before"]
+            after = obj["after"]
 
-            clean_b = before.content.replace('`', '')
-            clean_a = after.content.replace('`', '')
+            clean_b = before.content.replace("`", "")
+            clean_a = after.content.replace("`", "")
 
             await msg.edit(content=f"```yaml\n- {before.author} | {before.created_at}\n   Original: {clean_b}\n   Edited: {clean_a}```")
 
@@ -680,8 +707,64 @@ Timezone: {ip_json['timezone']}```
         msg = ctx.message
         nl = "\n- "
 
-        await msg.edit(f"```yaml\nThere are/is {len(pfxs)} prefix(es):\n- {nl.join(pfxs)}```", delete_after=5)
+        await msg.edit(content=f"```yaml\nThere are/is {len(pfxs)} prefix(es):\n- {nl.join(pfxs)}```", delete_after=5)
 
+    @vbot.command(
+        name="readserver",
+        description="Marks all the channels in a server as read"
+    )
+    async def readserver(self, ctx: vbot.Context, server_id: Optional[int]):
+        server_id = server_id or ctx.guild.id
+        msg = ctx.message
+
+        try:
+            guild: discord.Guild = self.bot.get_guild(server_id)
+            await guild.ack()
+            await msg.edit(content=f"```yaml\n+ Succesfully marked as read all channels in {guild.name}```", delete_after=5)
+
+        except:
+            return await ctx.send("```yaml\n- Error: Invalid server ID```", delete_after=5)
+    
+    @tasks.loop(hours=2)
+    async def autobump(self):
+        if self.bump["bumping"] and self.bump["cmd_obj"]:
+            await self.bump["cmd_obj"].__call__()
+    
+    @vbot.command(
+        name="abump",
+        description="Starts or stops auto disboard bump in the selected channel"
+    )
+    async def abump(self, ctx: vbot.Context, channel: Optional[discord.TextChannel]):
+        msg = ctx.message
+        channel: discord.TextChannel = channel or ctx.channel
+        
+        if not isinstance(channel, discord.TextChannel):
+            return await msg.edit(content="```yaml\n- Channel cannot be a DM.```", delete_after=5)
+        
+        try:
+            disboard = await channel.guild.fetch_member(302050872383242240)
+            
+        except discord.NotFound:
+            return await msg.edit(content="```yaml\n- DISBOARD is not in the server.```", delete_after=5)
+            
+        found = False
+        async for cmd in channel.slash_commands():
+            if cmd.application_id == disboard.id:
+                found = True
+                if cmd.name == "bump":
+                    self.bump["bumping"] = not self.bump["bumping"]
+                    if self.bump["bumping"] == False:
+                        await msg.edit(content="```yaml\n- Canceled autobump task.```", delete_after=5)
+                        await self.autobump.cancel()
+                
+                    else:
+                        await msg.edit(content="```yaml\n+ Started autobump task.```", delete_after=5)
+                        self.bump["cmd_obj"] = cmd
+                        await self.autobump.start()
+
+        if not found:
+            await msg.edit(content="```yaml\n- DISBOARD can't be accessed in the selected channel.```", delete_after=5)
+                    
 
 if __name__ == "__main__":
     print("You need to run main.py to run the bot")
