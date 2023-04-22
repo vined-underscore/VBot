@@ -1,10 +1,9 @@
 import os
-import discord
-import logging
+import selfcord as discord
 import config
 import traceback
 import sys
-from discord.ext import commands
+from selfcord.ext import commands
 from datetime import datetime
 from colorama import Fore as F
 from typing import Any, Union
@@ -20,7 +19,7 @@ def log(text: Any) -> None:
     print(f"{F.LIGHTBLACK_EX}[{time}] {text}")
 
 
-async def log_error(ctx: commands.Context, error, message: str, unknown: bool=False) -> None:
+async def log_error(ctx: commands.Context, error, message: str, unknown: bool = False) -> None:
     if config.logging["error_logging"] == "console":
         if unknown:
             return
@@ -51,7 +50,8 @@ async def log_error(ctx: commands.Context, error, message: str, unknown: bool=Fa
 
 
 def get_first_channel(guild: discord.Guild) -> Union[discord.TextChannel, str]:
-    channels = [channel for channel in guild.text_channels if channel.permissions_for(guild.me).read_messages]
+    channels = [channel for channel in guild.text_channels if channel.permissions_for(
+        guild.me).read_messages]
     if channels != []:
         return channels[0]
     else:
