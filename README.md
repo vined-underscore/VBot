@@ -9,19 +9,18 @@ Logo made in 10 minutes using paint.net, thanks for asking
 - The versions start from `3.2` because it used to be private
 
 ## How to setup:
-    - For beginners:
+    1. For beginners:
         - Download Python
         - Download the repository
         - Run `install.py`
         - Put your token and other optional info in `config.py` 
         - Run `main.py`
     
-    - For normal people:
+    2. For normal people:
         - Open cmd
-        - ```git clone https://github.com/vined-underscore/VBot
-             cd VBot
-             python install.py```
-    
+        - `git clone https://github.com/vined-underscore/VBot`
+        - `cd VBot`
+        - `python install.py`
         - Put stuff in `config.py`
         - `python main.py`
 
