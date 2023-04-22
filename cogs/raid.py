@@ -4,13 +4,12 @@ import selfcord as discord
 import random
 import aiohttp
 import itertools
-import math
 from colorama import Fore as F
 from selfcord.ext import commands as vbot
 from utils import req
 from utils import alias
-from typing import Optional
 from utils.paginator import AsyncPaginator
+from typing import Optional
 
 
 class RaidCmds(
@@ -86,7 +85,7 @@ class RaidCmds(
         name="channel",
         description=f"Spams a message indefinitely in the specified channel until stopped by unreacting the spam command with ❌ or PREFIXspam stop. (you need to surround the message with \"\". For example: \"get spammed\")"
     )
-    async def channel(self, ctx: vbot.Context, message: str, channel_id: Optional[int]):
+    async def schannel(self, ctx: vbot.Context, message: str, channel_id: Optional[int]):
         msg = ctx.message
         channel_id = channel_id or ctx.channel.id
 
@@ -109,7 +108,7 @@ class RaidCmds(
         name="all",
         description=f"Spams a message in every channel indefinitely until stopped by unreacting the spam command with ❌ or PREFIXspam stop"
     )
-    async def all(self, ctx: vbot.Context, *, message: str = "get spammed"):
+    async def sall(self, ctx: vbot.Context, *, message: str = "get spammed"):
         self.is_spamming = True
 
         msg = ctx.message
@@ -131,7 +130,7 @@ class RaidCmds(
         name="web",
         description=f"Creates a webhook and spams it indefinitely until stopped by unreacting the spam command with ❌ or PREFIXspam stop (You will need to surround the name in quotation marks \"like this\")"
     )
-    async def web(self, ctx: vbot.Context, name: str = "VBot", *, message: str = "get spammed"):
+    async def sweb(self, ctx: vbot.Context, name: str = "VBot", *, message: str = "get spammed"):
         self.is_spamming = True
 
         msg = ctx.message
@@ -189,7 +188,7 @@ class RaidCmds(
         name="mention",
         description="Mass mentions everyone in the server. Limit is how many mentions can be put in one message (Max is 150)"
     )
-    async def mention(self, ctx: vbot.Context, limit: Optional[int]):
+    async def smention(self, ctx: vbot.Context, limit: Optional[int] = None):
         msg = ctx.message
         guild = ctx.guild
         limit = limit or 50
@@ -201,13 +200,17 @@ class RaidCmds(
             return await msg.edit(content="```yaml\n- Limit cannot be bigger than the member count.```", delete_after=5)
 
         self.is_spamming = True
-
         await msg.add_reaction("❌")
 
+        try:
+            await guild.fetch_members(channels=guild.channels, cache=True, force_scraping=True)
+        except:
+            pass
+        
         mentions = [m.mention for m in guild.members if m != guild.me]
         paginator = AsyncPaginator(mentions, page_size=limit)
-        pages = [page async for page in paginator]
-
+        pages = [page async for page in paginator.iterate_pages()]
+        
         while self.is_spamming:
             for msg in pages:
                 await ctx.send("".join(msg))
@@ -216,7 +219,7 @@ class RaidCmds(
         name="role",
         description="Mass mentions every role in the server. Limit is how many mentions can be put in one message (Max is 150)"
     )
-    async def rolem(self, ctx: vbot.Context, limit: Optional[int]):
+    async def srolem(self, ctx: vbot.Context, limit: Optional[int] = None):
         msg = ctx.message
         guild = ctx.guild
         limit = limit or 10
@@ -228,7 +231,6 @@ class RaidCmds(
             return await msg.edit(content="```yaml\n- Limit cannot be bigger than the role count.```", delete_after=5)
 
         self.is_spamming = True
-
         await msg.add_reaction("❌")
 
         mentions = [r.mention for r in guild.roles]
@@ -244,14 +246,14 @@ class RaidCmds(
         name="stop",
         description="Stops spam if there is any going on"
     )
-    async def stop(self, ctx: vbot.Context):
+    async def sstop(self, ctx: vbot.Context):
         msg = ctx.message
 
         if self.is_spamming:
             self.is_spamming = False
             await msg.edit(content=f"```yaml\n+ Stopped spam.```", delete_after=5)
 
-        elif not self.is_spamming:
+        else:
             await msg.edit(content=f"```yaml\n- There is no spam going on.```", delete_after=5)
             
     @vbot.group(
@@ -294,7 +296,7 @@ class RaidCmds(
         name="channel",
         description=f"Ghostspams a message indefinitely in the specified channel until stopped by unreacting the spam command with ❌ or PREFIXspam stop. (you need to surround the message with \"\". For example: \"get spammed\")"
     )
-    async def channel(self, ctx: vbot.Context, message: str, channel_id: Optional[int]):
+    async def gschannel(self, ctx: vbot.Context, message: str, channel_id: Optional[int]):
         msg = ctx.message
         channel_id = channel_id or ctx.channel.id
 
@@ -318,7 +320,7 @@ class RaidCmds(
         name="all",
         description=f"Ghostspams a message in every channel indefinitely until stopped by unreacting the spam command with ❌ or PREFIXspam stop"
     )
-    async def all(self, ctx: vbot.Context, *, message: str = "get spammed"):
+    async def gsall(self, ctx: vbot.Context, *, message: str = "get spammed"):
         self.is_spamming = True
 
         msg = ctx.message
@@ -340,7 +342,7 @@ class RaidCmds(
         name="web",
         description=f"Creates a webhook and ghostspams it indefinitely until stopped by unreacting the spam command with ❌ or PREFIXspam stop (You will need to surround the name in quotation marks \"like this\")"
     )
-    async def web(self, ctx: vbot.Context, name: str = "VBot", *, message: str = "get spammed"):
+    async def gsweb(self, ctx: vbot.Context, name: str = "VBot", *, message: str = "get spammed"):
         self.is_spamming = True
 
         msg = ctx.message
@@ -369,7 +371,7 @@ class RaidCmds(
         name="mention",
         description="Mass mentions everyone with ghost messages in the server. Limit is how many mentions can be put in one message (Max is 150)"
     )
-    async def mention(self, ctx: vbot.Context, limit: Optional[int]):
+    async def gsmention(self, ctx: vbot.Context, limit: Optional[int] = None):
         msg = ctx.message
         guild = ctx.guild
         limit = limit or 50
@@ -381,12 +383,16 @@ class RaidCmds(
             return await msg.edit(content="```yaml\n- Limit cannot be bigger than the member count.```", delete_after=5)
 
         self.is_spamming = True
-
         await msg.add_reaction("❌")
 
+        try:
+            await guild.fetch_members(channels=guild.channels, cache=True, force_scraping=True)
+        except:
+            pass
+        
         mentions = [m.mention for m in guild.members if m != guild.me]
         paginator = AsyncPaginator(mentions, page_size=limit)
-        pages = [page async for page in paginator]
+        pages = [page async for page in paginator.iterate_pages()]
 
         while self.is_spamming:
             for msg in pages:
@@ -397,7 +403,7 @@ class RaidCmds(
         name="role",
         description="Mass mentions every role with ghost messages in the server. Limit is how many mentions can be put in one message (Max is 150)"
     )
-    async def rolem(self, ctx: vbot.Context, limit: Optional[int]):
+    async def gsrolem(self, ctx: vbot.Context, limit: Optional[int] = None):
         msg = ctx.message
         guild = ctx.guild
         limit = limit or 10
@@ -426,14 +432,14 @@ class RaidCmds(
         name="stop",
         description="Stops any spam if there is any going on"
     )
-    async def stop(self, ctx: vbot.Context):
+    async def gsstop(self, ctx: vbot.Context):
         msg = ctx.message
 
         if self.is_spamming:
             self.is_spamming = False
             await msg.edit(content=f"```yaml\n+ Stopped spam.```", delete_after=5)
 
-        elif not self.is_spamming:
+        else:
             await msg.edit(content=f"```yaml\n- There is no spam going on.```", delete_after=5)
 
     @vbot.command(
