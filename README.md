@@ -1,10 +1,11 @@
 # Selfbot info
-- `94` commands
+- `105` commands
 - `7` categories
-- The versions start from `3.0` because it used to be private
+- The versions start from `3.2` because it used to be private
 
 ## How to setup:
 - Download Python
+- Download the repository
 - Run `install.py`
 - Put your token and other optional info in `config.py` 
 - Run `main.py`
