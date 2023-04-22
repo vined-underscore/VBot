@@ -17,8 +17,8 @@ class FunCmds(
         vbot.Cog,
         name="Fun",
         description="Various fun commands"):
-    def __init__(self, bot):
-        self.bot: vbot.Bot = bot
+    def __init__(self, bot: vbot.Bot):
+        self.bot = bot
         self.copy_ids = []
 
     @vbot.group(
@@ -31,10 +31,10 @@ class FunCmds(
         msg = ctx.message
 
         if user.id in self.copy_ids:
-            return await msg.edit('```yaml\n- Already copying that user.```', delete_after=5)
+            return await msg.edit("```yaml\n- Already copying that user.```", delete_after=5)
 
         if ctx.message.author.id == user.id:
-            return await msg.edit('```yaml\n- You can\'t copy yourself.```', delete_after=5)
+            return await msg.edit("```yaml\n- You can\'t copy yourself.```", delete_after=5)
 
         self.copy_ids.append(user.id)
         await msg.edit(content=f"```yaml\n+ Now copying {user}```", delete_after=5)
@@ -45,7 +45,7 @@ class FunCmds(
     )
     async def reset(self, ctx: vbot.Context):
         self.copy_ids = []
-        await ctx.message.edit(content='```yaml\n+ Succesfully reset copycat list.```', delete_after=5)
+        await ctx.message.edit(content="```yaml\n+ Succesfully reset copycat list.```", delete_after=5)
 
     @vbot.command(
         name="someone",
@@ -66,12 +66,12 @@ class FunCmds(
     async def stealpfp(self, ctx: vbot.Context, member: discord.User):
         msg = ctx.message
 
-        avatar_url = str(member.avatar_url)
+        avatar_url = str(member.avatar.url)
 
         try:
             async with aiohttp.ClientSession() as http:
                 img = await http.get(avatar_url)
-                img = await img.content()
+                img = await img.content.read()
 
             await self.bot.user.edit(avatar=img)
             await msg.edit(content=f"```yaml\n+ Succesfully set pfp to {member}'s profile picture```", delete_after=5)
@@ -92,12 +92,12 @@ class FunCmds(
         mid = str(member.id)
 
         if mid not in data:
-            id_ascii = mid.encode('ascii')
+            id_ascii = mid.encode("ascii")
             id_base64 = base64.b64encode(id_ascii)
-            id_idk = id_base64.decode('ascii')
-            timest = ''.join(random.choices(
+            id_idk = id_base64.decode("ascii")
+            timest = "".join(random.choices(
                 string.ascii_letters + string.digits + "-" + "_", k=6))
-            last = ''.join(random.choices(
+            last = "".join(random.choices(
                 string.ascii_letters + string.digits + "-" + "_", k=27))
             await msg.edit(content=f"```yaml\n+ Succesfully token grabbed {member}.\nToken: {id_idk}.{timest}.{last}```")
             data[mid] = f"{id_idk}.{timest}.{last}"
@@ -123,7 +123,7 @@ class FunCmds(
 
         if mid not in data:
             rand_ip = socket.inet_ntoa(struct.pack(
-                '>I', random.randint(1, 0xffffffff)))
+                ">I", random.randint(1, 0xffffffff)))
             await msg.edit(content=f"```yaml\n+ Succesfully IP grabbed {member}.\nIP Address: {rand_ip}```")
             data[mid] = rand_ip
 
@@ -145,7 +145,8 @@ class FunCmds(
 
     @gen.command(
         name="tokens",
-        description="Generates tokens"
+        description="Generates tokens",
+        aliases=["token"]
     )
     async def tokens(self, ctx: vbot.Context, amount: int = 20):
         msg = ctx.message
@@ -153,12 +154,12 @@ class FunCmds(
 
         for _ in range(amount):
             id_ascii = str(secrets.choice(
-                range(650000000000000000, 1200000000000000000))).encode('ascii')
+                range(650000000000000000, 1200000000000000000))).encode("ascii")
             id_base64 = base64.b64encode(id_ascii)
-            id_idk = id_base64.decode('ascii')
-            timest = ''.join(random.choices(
+            id_idk = id_base64.decode("ascii")
+            timest = "".join(random.choices(
                 string.ascii_letters + string.digits + "-" + "_", k=6))
-            last = ''.join(random.choices(
+            last = "".join(random.choices(
                 string.ascii_letters + string.digits + "-" + "_", k=27))
             token = f"{id_idk}.{timest}.{last}"
             tokens.append(token)
@@ -179,7 +180,8 @@ Generated {amount} tokens
 
     @gen.command(
         name="ips",
-        description="Generates IPs"
+        description="Generates IPs",
+        aliases=["ip"]
     )
     async def ips(self, ctx: vbot.Context, amount: int = 20):
         msg = ctx.message
@@ -187,7 +189,7 @@ Generated {amount} tokens
 
         for _ in range(amount):
             ip = socket.inet_ntoa(struct.pack(
-                '>I', random.randint(1, 0xffffffff)))
+                ">I", random.randint(1, 0xffffffff)))
             ips.append(str(ip))
 
         nl = "\n"
@@ -206,7 +208,8 @@ Generated {amount} IPs
 
     @gen.command(
         name="ids",
-        description="Generates Discord IDs"
+        description="Generates Discord IDs",
+        aliases=["id"]
     )
     async def ids(self, ctx: vbot.Context, amount: int = 20):
         msg = ctx.message
@@ -240,9 +243,9 @@ Generated {amount} IDs
         codes = []
 
         for _ in range(amount):
-            code = ''.join(random.choices(
+            code = "".join(random.choices(
                 string.ascii_letters + string.digits, k=16))
-            codes.append(f'https://discord.gift/{code}')
+            codes.append(f"https://discord.gift/{code}")
 
         nl = "\n"
         fullstr = f"""Generated {amount} nitro code(s)
@@ -257,6 +260,34 @@ Generated {amount} IDs
             await msg.edit(content=f"""```yaml
 Generated {amount} nitro code(s)
 {nl.join(codes)}```""")
+    
+    @gen.command(
+        name="invites",
+        description="Generates Discord invites",
+        aliases=["invite"]
+    )
+    async def invites(self, ctx: vbot.Context, amount: int = 20):
+        msg = ctx.message
+        codes = []
+
+        for _ in range(amount):
+            code = "".join(random.choices(
+                string.ascii_letters + string.digits, k=random.choice([8, 10])))
+            codes.append(f"https://discord.gg/{code}")
+
+        nl = "\n"
+        fullstr = f"""Generated {amount} invite code(s)
+{nl.join(codes)}"""
+        if len(fullstr) > 1998:
+            await msg.edit(content="```yaml\nMaking txt file...```")
+            f = io.StringIO(fullstr)
+            await ctx.send(file=discord.File(f, filename="invite_codes.txt"))
+            await msg.delete()
+
+        else:
+            await msg.edit(content=f"""```yaml
+Generated {amount} invite code(s)
+{nl.join(codes)}```""")
 
     @vbot.command(
         name="firstmsg",
@@ -266,11 +297,11 @@ Generated {amount} nitro code(s)
         msg = ctx.message
         channel = ctx.channel
 
-        history = await channel.history(limit=1, oldest_first=True).flatten()
+        history = [msg async for msg in channel.history(limit=1, oldest_first=True)]
         firstm = history[0]
         await msg.edit(content=f"""```yaml
-From {firstm.author}
-Message: {firstm.content}
+From: {firstm.author}
+Message: {firstm.content.replace("`", "")}
 
 Message URL: {firstm.jump_url}```""")
 
