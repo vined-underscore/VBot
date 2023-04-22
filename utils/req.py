@@ -1,4 +1,5 @@
 import random
+from typing import Dict
 
 __api__ = "https://discord.com/api/v9"
 
@@ -12,7 +13,7 @@ def randstr(length: int) -> str:
     return text
 
 
-def headers(bot_token: str) -> dict:
+def headers(bot_token: str) -> Dict[str, str]:
     return {
         "authorization": bot_token,
         "accept": "*/*",
