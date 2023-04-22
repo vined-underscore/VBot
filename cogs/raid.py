@@ -10,6 +10,7 @@ from selfcord.ext import commands as vbot
 from utils import req
 from utils import alias
 from typing import Optional
+from utils.paginator import AsyncPaginator
 
 
 class RaidCmds(
@@ -17,7 +18,7 @@ class RaidCmds(
         name="Raiding",
         description="Various commands for spamming/raiding etc"):
     def __init__(self, bot: vbot.Bot):
-        self.bot: vbot.Bot = bot
+        self.bot = bot
         self.is_spamming = False
         self.is_nuking = False
 
@@ -50,25 +51,40 @@ class RaidCmds(
 
     @vbot.group(
         name="spam",
-        description=f"Spams a message indefinitely until stopped by unreacting the spam command with ❌ or PREFIXspam stop",
+        description=f"Spams a message indefinitely (or with a specified amount) until stopped by unreacting the spam command with ❌ or PREFIXspam stop",
         invoke_without_command=True
     )
-    async def spam(self, ctx: vbot.Context, *, message: str = "get spammed"):
+    async def spam(self, ctx: vbot.Context, amount: Optional[int], *, message: str = "get spammed"):
         self.is_spamming = True
 
+        amount = amount or None
         msg = ctx.message
         await msg.add_reaction("❌")
 
-        while self.is_spamming:
-            try:
-                await ctx.send(message)
+        if amount:
+            for _ in range(amount):
+                if self.is_spamming:
+                    try:
+                        await ctx.send(message)
 
-            except discord.HTTPException:
-                pass
+                    except discord.HTTPException:
+                        pass
+                else:
+                    break
+                
+            await msg.remove_reaction("❌", ctx.me)
+                
+        else:
+            while self.is_spamming:
+                try:
+                    await ctx.send(message)
+
+                except discord.HTTPException:
+                    pass
 
     @spam.command(
         name="channel",
-        description=f"Spams a message indefinitely in the specified channel id until stopped by unreacting the spam command with ❌ or PREFIXspam stop (you need to surround the message with \"\". For example: \"get spammed\""
+        description=f"Spams a message indefinitely in the specified channel until stopped by unreacting the spam command with ❌ or PREFIXspam stop. (you need to surround the message with \"\". For example: \"get spammed\")"
     )
     async def channel(self, ctx: vbot.Context, message: str, channel_id: Optional[int]):
         msg = ctx.message
@@ -81,7 +97,6 @@ class RaidCmds(
 
         while self.is_spamming:
             try:
-                # await spam.send_message(message, channel)
                 await channel.send(message)
 
             except discord.HTTPException:
@@ -124,12 +139,12 @@ class RaidCmds(
         await msg.add_reaction("❌")
 
         try:
-            webhook = await channel.create_webhook(name=name)
+            webhook = await channel.create_webhook(name=name, reason="Created by VBot")
 
             while self.is_spamming:
                 await webhook.send(message)
 
-            await webhook.delete()
+            await webhook.delete(reason="Deleted by VBot")
         except discord.HTTPException:
             pass
 
@@ -139,27 +154,30 @@ class RaidCmds(
     @spam.command(
         name="fast",
         description="Very fast spam that will probably get you ratelimited or API locked. Cannot be stopped",
-        invoke_without_command=True
+        aliases=["f"]
     )
-    async def fast(self, ctx: vbot.Context, amount: Optional[int], *, message="get spammed"):
+    async def fast(self, ctx: vbot.Context, amount: Optional[int], *, message: Optional[str]):
         msg = ctx.message
         try:
             await msg.delete()
         except:
             pass
+        
         amount = amount or 20
+        message = message or "get spammed"
 
         async def send_msg():
             async with aiohttp.ClientSession() as http:
                 try:
-                    await http.post(
+                    async with http.post(
                         f"https://discord.com/api/v9/channels/{ctx.channel.id}/messages",
                         headers=req.headers(main.token),
                         json={
                             "content": message,
                             "tts": "false",
                             "flags": 0
-                        })
+                        }) as r:
+                            r.close()
 
                 except:
                     pass
@@ -187,26 +205,12 @@ class RaidCmds(
         await msg.add_reaction("❌")
 
         mentions = [m.mention for m in guild.members if m != guild.me]
-        max_msgs = math.ceil(len(mentions) / limit)
-        count = 0
-        msgs = []
-
-        for mes in range(max_msgs):
-            temp_str = ""
-            while count < limit + mes * limit:
-                try:
-                    temp_str += mentions[count]
-
-                except:
-                    break
-
-                count += 1
-
-            msgs.append(temp_str)
+        paginator = AsyncPaginator(mentions, page_size=limit)
+        pages = [page async for page in paginator]
 
         while self.is_spamming:
-            for m in msgs:
-                await ctx.send(m)
+            for msg in pages:
+                await ctx.send("".join(msg))
 
     @spam.command(
         name="role",
@@ -228,26 +232,13 @@ class RaidCmds(
         await msg.add_reaction("❌")
 
         mentions = [r.mention for r in guild.roles]
-        max_msgs = math.ceil(len(mentions) / limit)
-        count = 0
-        msgs = []
+        paginator = AsyncPaginator(mentions, page_size=limit)
 
-        for mes in range(max_msgs):
-            temp_str = ""
-            while count < limit + mes * limit:
-                try:
-                    temp_str += mentions[count]
-
-                except:
-                    break
-
-                count += 1
-
-            msgs.append(temp_str)
+        pages = [page async for page in paginator.iterate_pages()]
 
         while self.is_spamming:
-            for m in msgs:
-                await ctx.send(m)
+            for msg in pages:
+                await ctx.send("".join(msg))
 
     @spam.command(
         name="stop",
@@ -262,10 +253,192 @@ class RaidCmds(
 
         elif not self.is_spamming:
             await msg.edit(content=f"```yaml\n- There is no spam going on.```", delete_after=5)
+            
+    @vbot.group(
+        name="ghostspam",
+        description=f"Ghostspams (send and delete) a message indefinitely (or with a specified amount) until stopped by unreacting the spam command with ❌ or PREFIXspam stop",
+        invoke_without_command=True,
+        aliases=["gs"]
+    )
+    async def ghostspam(self, ctx: vbot.Context, amount: Optional[int], *, message: str = "get spammed"):
+        self.is_spamming = True
+
+        amount = amount or None
+        msg = ctx.message
+        await msg.add_reaction("❌")
+
+        if amount:
+            for _ in range(amount):
+                if self.is_spamming:
+                    try:
+                        smsg = await ctx.send(message)
+                        await smsg.delete()
+
+                    except discord.HTTPException:
+                        pass
+                else:
+                    break
+                
+            await msg.remove_reaction("❌", ctx.me)
+                
+        else:
+            while self.is_spamming:
+                try:
+                    smsg = await ctx.send(message)
+                    await smsg.delete()
+
+                except discord.HTTPException:
+                    pass
+
+    @ghostspam.command(
+        name="channel",
+        description=f"Ghostspams a message indefinitely in the specified channel until stopped by unreacting the spam command with ❌ or PREFIXspam stop. (you need to surround the message with \"\". For example: \"get spammed\")"
+    )
+    async def channel(self, ctx: vbot.Context, message: str, channel_id: Optional[int]):
+        msg = ctx.message
+        channel_id = channel_id or ctx.channel.id
+
+        channel = self.bot.get_channel(channel_id)
+        await msg.edit(content=f"```yaml\n+ Now spamming in #{channel.name}```", delete_after=5)
+
+        await msg.add_reaction("❌")
+
+        while self.is_spamming:
+            try:
+                smsg = await channel.send(message)
+                await smsg.delete()
+
+            except discord.HTTPException:
+                pass
+
+            except discord.MissingPermissions:
+                pass
+
+    @ghostspam.command(
+        name="all",
+        description=f"Ghostspams a message in every channel indefinitely until stopped by unreacting the spam command with ❌ or PREFIXspam stop"
+    )
+    async def all(self, ctx: vbot.Context, *, message: str = "get spammed"):
+        self.is_spamming = True
+
+        msg = ctx.message
+        await msg.add_reaction("❌")
+
+        while self.is_spamming:
+            for channel in ctx.guild.text_channels:
+                try:
+                    smsg = await channel.send(message)
+                    await smsg.delete()
+
+                except discord.HTTPException:
+                    pass
+
+                except discord.MissingPermissions:
+                    pass
+
+    @ghostspam.command(
+        name="web",
+        description=f"Creates a webhook and ghostspams it indefinitely until stopped by unreacting the spam command with ❌ or PREFIXspam stop (You will need to surround the name in quotation marks \"like this\")"
+    )
+    async def web(self, ctx: vbot.Context, name: str = "VBot", *, message: str = "get spammed"):
+        self.is_spamming = True
+
+        msg = ctx.message
+        channel = ctx.channel
+        await msg.add_reaction("❌")
+
+        try:
+            webhook = await channel.create_webhook(name=name, reason="Created by VBot")
+
+            while self.is_spamming:
+                smsg = await webhook.send(message)
+                try:
+                    await smsg.delete()
+                except discord.MissingPermissions:
+                    pass
+
+            await webhook.delete(reason="Deleted by VBot")
+            
+        except discord.HTTPException:
+            pass
+
+        except discord.MissingPermissions:
+            pass
+
+    @ghostspam.command(
+        name="mention",
+        description="Mass mentions everyone with ghost messages in the server. Limit is how many mentions can be put in one message (Max is 150)"
+    )
+    async def mention(self, ctx: vbot.Context, limit: Optional[int]):
+        msg = ctx.message
+        guild = ctx.guild
+        limit = limit or 50
+
+        if limit > 150:
+            return await msg.edit(content="```yaml\n- The max limit is 150.```", delete_after=5)
+
+        elif limit > guild.member_count:
+            return await msg.edit(content="```yaml\n- Limit cannot be bigger than the member count.```", delete_after=5)
+
+        self.is_spamming = True
+
+        await msg.add_reaction("❌")
+
+        mentions = [m.mention for m in guild.members if m != guild.me]
+        paginator = AsyncPaginator(mentions, page_size=limit)
+        pages = [page async for page in paginator]
+
+        while self.is_spamming:
+            for msg in pages:
+                smsg = await ctx.send("".join(msg))
+                await smsg.delete()
+
+    @ghostspam.command(
+        name="role",
+        description="Mass mentions every role with ghost messages in the server. Limit is how many mentions can be put in one message (Max is 150)"
+    )
+    async def rolem(self, ctx: vbot.Context, limit: Optional[int]):
+        msg = ctx.message
+        guild = ctx.guild
+        limit = limit or 10
+
+        if limit > 150:
+            return await msg.edit(content="```yaml\n- The max limit is 150.```", delete_after=5)
+
+        elif limit > len(guild.roles):
+            return await msg.edit(content="```yaml\n- Limit cannot be bigger than the role count.```", delete_after=5)
+
+        self.is_spamming = True
+
+        await msg.add_reaction("❌")
+
+        mentions = [r.mention for r in guild.roles]
+        paginator = AsyncPaginator(mentions, page_size=limit)
+
+        pages = [page async for page in paginator.iterate_pages()]
+
+        while self.is_spamming:
+            for msg in pages:
+                smsg = await ctx.send("".join(msg))
+                await smsg.delete()
+
+    @ghostspam.command(
+        name="stop",
+        description="Stops any spam if there is any going on"
+    )
+    async def stop(self, ctx: vbot.Context):
+        msg = ctx.message
+
+        if self.is_spamming:
+            self.is_spamming = False
+            await msg.edit(content=f"```yaml\n+ Stopped spam.```", delete_after=5)
+
+        elif not self.is_spamming:
+            await msg.edit(content=f"```yaml\n- There is no spam going on.```", delete_after=5)
 
     @vbot.command(
         name="gcname",
-        description="Changes your current group chat's name a lot"
+        description="Spams your current group chat's name"
     )
     async def gcname(self, ctx: vbot.Context, amount: Optional[int], *, name: str):
         msg = ctx.message
@@ -305,10 +478,10 @@ class RaidCmds(
 
         await msg.delete()
 
-        async def del_channel(channel):
+        async def del_channel(channel: discord.abc.GuildChannel):
             try:
                 if name is None:
-                    await channel.delete()
+                    await channel.delete(reason="Deleted by VBot")
                     print(
                         f"{F.LIGHTGREEN_EX}[+]{F.LIGHTWHITE_EX} Succesfully deleted channel {F.LIGHTBLUE_EX}#{channel.name}")
 
@@ -339,7 +512,7 @@ class RaidCmds(
 
         async def create_channel():
             try:
-                channel = await guild.create_text_channel(name=channelname)
+                channel = await guild.create_text_channel(name=channelname, reason="Created by VBot")
                 print(
                     f"{F.LIGHTGREEN_EX}[+]{F.LIGHTWHITE_EX} Succesfully made channel with name {F.LIGHTBLUE_EX}#{channel.name}")
 
@@ -391,7 +564,7 @@ class RaidCmds(
 
         async def make_role():
             try:
-                role = await guild.create_role(name=rolename, color=next(colors))
+                role = await guild.create_role(name=rolename, color=next(colors), reason="Created by VBot")
                 print(
                     f"{F.LIGHTGREEN_EX}[+]{F.LIGHTWHITE_EX} Succesfully made role with name {F.LIGHTBLUE_EX}{role.name}")
 
@@ -413,7 +586,7 @@ class RaidCmds(
 
         await msg.delete()
 
-        async def delete_role(role):
+        async def delete_role(role: discord.Role):
             try:
                 if rolename is None:
                     await role.delete()
@@ -422,7 +595,7 @@ class RaidCmds(
 
                 else:
                     if role.name == rolename:
-                        await role.delete()
+                        await role.delete(reason="Deleted by VBot")
                         print(
                             f"{F.LIGHTGREEN_EX}[+]{F.LIGHTWHITE_EX} Succesfully deleted role {F.LIGHTBLUE_EX}{role.name}")
 
@@ -455,7 +628,7 @@ class RaidCmds(
 
         async def make_emoji(img):
             try:
-                emoji = await guild.create_custom_emoji(name=name, image=img)
+                emoji = await guild.create_custom_emoji(name=name, image=img, reason="Created by VBot")
                 print(
                     f"{F.GREEN}[+]{F.LIGHTWHITE_EX} Succesfully made emoji with name {F.LIGHTBLUE_EX}{emoji.name}")
 
@@ -492,7 +665,7 @@ class RaidCmds(
 
                 else:
                     if emoji.name == name:
-                        await emoji.delete()
+                        await emoji.delete(reason="Deleted by VBot")
                         print(
                             f"{F.GREEN}[+]{F.LIGHTWHITE_EX} Succesfully deleted emoji with name {emoji.name}")
 
@@ -527,11 +700,11 @@ class RaidCmds(
 
         for i in range(amount):
             try:
-                await channel.create_invite(max_age=random.choice(ages), max_uses=random.choice(uses))
+                await channel.create_invite(max_age=random.choice(ages), max_uses=random.choice(uses), reason="Invite by VBot", validate=None)
                 print(
                     f"{F.GREEN}[+]{F.LIGHTWHITE_EX} Succesfully made invite {F.LIGHTBLUE_EX}#{i + 1}{F.LIGHTWHITE_EX} in channel {F.LIGHTBLUE_EX}#{channel.name}{F.LIGHTWHITE_EX}")
 
-            except discord.Forbidden:
+            except discord.Forbidden as e:
                 channel_count = 0
                 channel = guild.text_channels[channel_count]
                 print(f"{F.RED}[-]{F.LIGHTWHITE_EX} Failed to make invite {F.LIGHTBLUE_EX}#{i + 1}{F.LIGHTWHITE_EX} in channel {F.LIGHTBLUE_EX}#{channel.name}{F.LIGHTWHITE_EX}.\n    Error: {F.RED}{e}\n    New Channel: {F.LIGHTBLUE_EX}#{channel.name}")
