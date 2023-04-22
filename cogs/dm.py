@@ -8,7 +8,7 @@ class DMCmds(
         vbot.Cog,
         name="DM",
         description="Various DM spam commands"):
-    def __init__(self, bot):
+    def __init__(self, bot: vbot.Bot):
         self.bot: vbot.Bot = bot
 
     @vbot.command(
