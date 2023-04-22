@@ -4,8 +4,6 @@ import re
 import selfcord as discord
 import aiohttp
 import config
-import asyncio
-from config import nitro_sniper_url
 from selfcord.ext import commands as vbot
 from colorama import Fore
 from main import token
@@ -17,14 +15,14 @@ class NitroSniper(
         vbot.Cog,
         name="Nitro Sniper"):
     def __init__(self, bot):
-        self.bot: vbot.Bot = bot
+        self.bot = bot
         self.reg = re.compile(
             "(discord.gift/|discord.com/gifts/|discordapp.com/gifts/)([a-zA-Z0-9]+)")
 
         try:
             self.session = aiohttp.ClientSession()
             self.webhook = discord.Webhook.from_url(
-                nitro_sniper_url, session=self.session)
+                config.nitro_sniper["url"], session=self.session)
 
         except:
             pass
@@ -32,12 +30,12 @@ class NitroSniper(
     async def snipe_server(self, code: str, msg: discord.Message, r, r_delay: float):
         text = str(r)
 
-        if not nitro_sniper_url.startswith('https://discord.com/api/webhooks/'):
-            if 'This gift has been redeemed already' in text:
+        if not config.nitro_sniper["url"].startswith("https://discord.com/api/webhooks/"):
+            if "This gift has been redeemed already" in text:
                 print(f"{Fore.LIGHTRED_EX}[-] \033[1mAlready Redemeed\033[0m{Fore.LIGHTRED_EX} | Code: \033[1m{code}\033[0m{Fore.LIGHTRED_EX} | {msg.guild.name} > #{msg.channel.name} || {msg.author}" +
                       f"{Fore.LIGHTRED_EX}\nDelay: " + r_delay + "\n" + Fore.RESET)
 
-            elif 'Unknown Gift Code' in text:
+            elif "Unknown Gift Code" in text:
                 print(f"{Fore.LIGHTRED_EX}[-] \033[1mInvalid Code\033[0m{Fore.LIGHTRED_EX} | Code: \033[1m{code}\033[0m{Fore.LIGHTRED_EX} | {msg.guild.name} > #{msg.channel.name} || {msg.author}" +
                       f"{Fore.LIGHTRED_EX}\nDelay: " + r_delay + "\n" + Fore.RESET)
 
@@ -46,9 +44,9 @@ class NitroSniper(
                       f"{Fore.LIGHTGREEN_EX}\nDelay: " + r_delay + "\n" + Fore.RESET)
 
         else:
-            if 'This gift has been redeemed already' in text:
+            if "This gift has been redeemed already" in text:
                 embed = discord.Embed(color=0xff434b)
-                embed.title = 'Already Redeemed'
+                embed.title = "Already Redeemed"
                 embed.url = msg.jump_url
                 embed.description = f"""```yaml\n
 - Code: {code}
@@ -60,14 +58,14 @@ class NitroSniper(
                       f"{Fore.LIGHTRED_EX}\nDelay: " + r_delay + "\n" + Fore.RESET)
 
                 await self.webhook.send(
-                    content="@everyone",
+                    content="@everyone" if config.nitro_sniper["ping"] else None,
                     embed=embed,
-                    username='VSniper',
-                    avatar_url='https://i.redd.it/0037pi1sppm71.png')
+                    username="VSniper",
+                    avatar_url="https://i.redd.it/0037pi1sppm71.png")
 
-            elif 'Unknown Gift Code' in text:
+            elif "Unknown Gift Code" in text:
                 embed = discord.Embed(color=0xff434b)
-                embed.title = 'Invalid Code'
+                embed.title = "Invalid Code"
                 embed.url = msg.jump_url
                 embed.description = f"""```yaml\n
 - Code: {code}
@@ -79,14 +77,14 @@ class NitroSniper(
                       f"{Fore.LIGHTRED_EX}\nDelay: " + r_delay + "\n" + Fore.RESET)
 
                 await self.webhook.send(
-                    content="@everyone",
+                    content="@everyone" if config.nitro_sniper["ping"] else None,
                     embed=embed,
-                    username='VSniper',
-                    avatar_url='https://i.redd.it/0037pi1sppm71.png')
+                    username="VSniper",
+                    avatar_url="https://i.redd.it/0037pi1sppm71.png")
 
             elif "nitro" in text:
                 embed = discord.Embed(color=0xc3e88d)
-                embed.title = 'Succesfully redeemed'
+                embed.title = "Succesfully redeemed"
                 embed.url = msg.jump_url
                 embed.description = f"""```yaml\n
 - Code: {code}
@@ -98,20 +96,20 @@ class NitroSniper(
                       f"{Fore.LIGHTGREEN_EX}\nDelay: " + r_delay + "\n" + Fore.RESET)
 
                 await self.webhook.send(
-                    content="@everyone",
+                    content="@everyone" if config.nitro_sniper["ping"] else None,
                     embed=embed,
-                    username='VSniper',
-                    avatar_url='https://i.redd.it/0037pi1sppm71.png')
+                    username="VSniper",
+                    avatar_url="https://i.redd.it/0037pi1sppm71.png")
 
     async def snipe_dm(self, code: str, msg: discord.Message, r, r_delay: float):
         text = str(r)
 
-        if not nitro_sniper_url.startswith('https://discord.com/api/webhooks/'):
-            if 'This gift has been redeemed already' in text:
+        if not config.nitro_sniper["url"].startswith("https://discord.com/api/webhooks/"):
+            if "This gift has been redeemed already" in text:
                 print(f"{Fore.LIGHTRED_EX}[-] \033[1mAlready Redemeed\033[0m{Fore.LIGHTRED_EX} | Code: \033[1m{code}\033[0m{Fore.LIGHTRED_EX} | DMs > {str(msg.channel).replace('Direct Message with', '')}" +
                       f"{Fore.LIGHTRED_EX}\nDelay: " + r_delay + "\n" + Fore.RESET)
 
-            elif 'Unknown Gift Code' in text:
+            elif "Unknown Gift Code" in text:
                 print(f"{Fore.LIGHTRED_EX}[-] \033[1mInvalid Code\033[0m{Fore.LIGHTRED_EX} | Code: \033[1m{code}\033[0m{Fore.LIGHTRED_EX} | DMs > {str(msg.channel).replace('Direct Message with', '')}" +
                       f"{Fore.LIGHTRED_EX}\nDelay: " + r_delay + "\n" + Fore.RESET)
 
@@ -120,9 +118,9 @@ class NitroSniper(
                       f"{Fore.LIGHTGREEN_EX}\nDelay: " + r_delay + "\n" + Fore.RESET)
 
         else:
-            if 'This gift has been redeemed already' in text:
+            if "This gift has been redeemed already" in text:
                 embed = discord.Embed(color=0xff434b)
-                embed.title = 'Already Redeemed'
+                embed.title = "Already Redeemed"
                 embed.url = msg.jump_url
                 embed.description = f"""```yaml\n
 - Code: {code}
@@ -134,14 +132,14 @@ class NitroSniper(
                       f"{Fore.LIGHTRED_EX}\nDelay: " + r_delay + "\n" + Fore.RESET)
 
                 await self.webhook.send(
-                    content="@everyone",
+                    content="@everyone" if config.nitro_sniper["ping"] else None,
                     embed=embed,
-                    username='VSniper',
-                    avatar_url='https://i.redd.it/0037pi1sppm71.png')
+                    username="VSniper",
+                    avatar_url="https://i.redd.it/0037pi1sppm71.png")
 
-            elif 'Unknown Gift Code' in text:
+            elif "Unknown Gift Code" in text:
                 embed = discord.Embed(color=0xff434b)
-                embed.title = 'Invalid Code'
+                embed.title = "Invalid Code"
                 embed.url = msg.jump_url
                 embed.description = f"""```yaml\n
 - Code: {code}
@@ -153,14 +151,14 @@ class NitroSniper(
                       f"{Fore.LIGHTRED_EX}\nDelay: " + r_delay + "\n" + Fore.RESET)
 
                 await self.webhook.send(
-                    content="@everyone",
+                    content="@everyone" if config.nitro_sniper["ping"] else None,
                     embed=embed,
-                    username='VSniper',
-                    avatar_url='https://i.redd.it/0037pi1sppm71.png')
+                    username="VSniper",
+                    avatar_url="https://i.redd.it/0037pi1sppm71.png")
 
             elif "nitro" in text:
                 embed = discord.Embed(color=0xc3e88d)
-                embed.title = 'Succesfully redeemed'
+                embed.title = "Succesfully redeemed"
                 embed.url = msg.jump_url
                 embed.description = f"""```yaml\n
 - Code: {code}
@@ -172,10 +170,10 @@ class NitroSniper(
                       f"{Fore.LIGHTGREEN_EX}\nDelay: " + r_delay + "\n" + Fore.RESET)
 
                 await self.webhook.send(
-                    content="@everyone",
+                    content="@everyone" if config.nitro_sniper["ping"] else None,
                     embed=embed,
-                    username='VSniper',
-                    avatar_url='https://i.redd.it/0037pi1sppm71.png')
+                    username="VSniper",
+                    avatar_url="https://i.redd.it/0037pi1sppm71.png")
 
     async def claim_code(self, code: str, msg: discord.Message):
         async with aiohttp.ClientSession() as client:
@@ -184,8 +182,7 @@ class NitroSniper(
                     f"{__api__}/entitlements/gift-codes/{code}/redeem",
                     json={
                         "channel_id": str(msg.channel.id)
-                    },
-                    headers={
+                    }, headers={
                         "authorization": token
                     }) as r:
                 end = perf_counter()
