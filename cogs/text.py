@@ -8,31 +8,31 @@ class TextCmds(
         name="Text",
         description="Various commands for text editing"):
     def __init__(self, bot):
-        self.bot: vbot.Bot = bot
+        self.bot = bot
 
     @vbot.command(
         name="encode",
         description="Encodes a string into base64"
     )
-    async def encode(self, ctx, *, string):
+    async def encode(self, ctx: vbot.Context, *, string: str):
         msg = ctx.message
 
-        message_bytes = string.encode('ascii')
+        message_bytes = string.encode("ascii")
         base64_bytes = base64.b64encode(message_bytes)
-        base64_message = base64_bytes.decode('ascii')
+        base64_message = base64_bytes.decode("ascii")
 
         await msg.edit(content=f"```yaml\n{base64_message}```")
 
     @vbot.command(
-        name='decode',
+        name="decode",
         description="Decodes a base64 string (or any string)"
     )
-    async def decode(self, ctx, *, string):
+    async def decode(self, ctx: vbot.Context, *, string: str):
         msg = ctx.message
 
-        base64_bytes = string.encode('ascii')
+        base64_bytes = string.encode("ascii")
         message_bytes = base64.b64decode(base64_bytes)
-        message = message_bytes.decode('ascii')
+        message = message_bytes.decode("ascii")
 
         await msg.edit(content=f"```yaml\n{message}```")
 
@@ -40,9 +40,9 @@ class TextCmds(
         name="space",
         description="Spaces every character in a string"
     )
-    async def space(self, ctx, *, txt):
+    async def space(self, ctx: vbot.Context, *, txt: str):
         msg = ctx.message
-        spaced_txt = " ".join([''.join(item) for item in zip(txt[::1])])
+        spaced_txt = " ".join(["".join(item) for item in zip(txt[::1])])
 
         try:
             await msg.edit(content=spaced_txt)
@@ -54,7 +54,7 @@ class TextCmds(
         name="upper",
         description="Makes every character uppercase in a string"
     )
-    async def _upper(self, ctx, *, txt):
+    async def _upper(self, ctx: vbot.Context, *, txt: str):
         msg = ctx.message
         uppercased = txt.upper()
 
@@ -68,7 +68,7 @@ class TextCmds(
         name="lower",
         description="Makes every character lowercase in a string"
     )
-    async def _lower(self, ctx, *, txt):
+    async def _lower(self, ctx: vbot.Context, *, txt: str):
         msg = ctx.message
         lowercased = txt.lower()
 
@@ -80,9 +80,9 @@ class TextCmds(
 
     @vbot.command(
         name="invert",
-        description="Inverts the characters' case (use command to understand)"
+        description="Inverts all the characters' case"
     )
-    async def invert(self, ctx, *, txt):
+    async def invert(self, ctx: vbot.Context, *, txt: str):
         msg = ctx.message
         inverted = txt.swapcase()
 
@@ -96,7 +96,7 @@ class TextCmds(
         name="reverse",
         description="Reverses a string"
     )
-    async def reverse(self, ctx, *, txt):
+    async def reverse(self, ctx: vbot.Context, *, txt: str):
         msg = ctx.message
         reversed = txt[::-1]
 
@@ -110,7 +110,7 @@ class TextCmds(
         name="annoy",
         description="Makes a string annoying"
     )
-    async def annoy(self, ctx, *, txt):
+    async def annoy(self, ctx: vbot.Context, *, txt: str):
         msg = ctx.message
         annoying = ""
 
@@ -131,7 +131,7 @@ class TextCmds(
     async def ascii(self, ctx: vbot.Context, *, message: str):
         msg = ctx.message
         text = text2art(message)
-        await msg.edit(content=f'```yaml\n{text}```')
+        await msg.edit(content=f"```yaml\n{text}```")
 
     @ascii.command(
         name="random",
@@ -141,7 +141,7 @@ class TextCmds(
         msg = ctx.message
         try:
             text = text2art(message, font="random")
-            await msg.edit(content=f'```yaml\n{text}```')
+            await msg.edit(content=f"```yaml\n{text}```")
 
         except Exception as e:
             await msg.edit(content=f"```yaml\n- An error has occurred: {e}")
