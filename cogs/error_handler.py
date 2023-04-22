@@ -1,11 +1,12 @@
 import traceback
 import sys
+from utils.other import log_error
 from selfcord.ext import commands as vbot
 
 
 class ErrorHandler(vbot.Cog):
-    def __init__(self, bot):
-        self.bot: vbot.Bot = bot
+    def __init__(self, bot: vbot.Bot):
+        self.bot = bot
 
     @vbot.Cog.listener()
     async def on_command_error(self, ctx: vbot.Context, error):
@@ -19,23 +20,19 @@ class ErrorHandler(vbot.Cog):
         error = getattr(error, 'original', error)
 
         if isinstance(error, vbot.CommandNotFound):
-            await msg.edit(content=f"```yaml\n❌ The command \"{msg.content.split(' ')[0]}\" does not exist.```", delete_after=5)
+            await log_error(ctx, error, f"```yaml\n❌ The command \"{msg.content.split(' ')[0]}\" does not exist.```")
 
         elif isinstance(error, vbot.MissingRequiredArgument):
-            await msg.edit(content=f"```yaml\n❌ You forgot to write the parameter \"{error.param.name}\".```", delete_after=5)
+            await log_error(ctx, error, f"```yaml\n❌ You forgot to write the parameter \"{error.param.name}\".```")
 
         elif isinstance(error, vbot.BadArgument):
-            await msg.edit(content=f"```yaml\n❌ You entered a parameter incorrectly.```", delete_after=5)
+            await log_error(ctx, error, f"```yaml\n❌ You entered a parameter incorrectly.```")
 
         elif isinstance(error, vbot.MissingPermissions):
-            await msg.edit(content=f"```yaml\n❌ You don't have enough permissions to perform this command.```", delete_after=5)
-
-        elif isinstance(error, Exception):
-            await msg.edit(content=f"```yaml\n❌ An unknown error occurred: {error}```", delete_after=5)
+            await log_error(ctx, error, f"```yaml\n❌ You don't have enough permissions to perform this command.```")
 
         else:
-            print('Ignoring exception in command {}:'.format(
-                ctx.command), file=sys.stderr)
+            await log_error(ctx, error, f"```yaml\n❌ An unknown error occurred: {error}```", True)
             traceback.print_exception(
                 type(error), error, error.__traceback__, file=sys.stderr)
 
