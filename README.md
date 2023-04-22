@@ -18,7 +18,7 @@ Logo made in 10 minutes using paint.net, thanks for asking
 
 2. For normal people:
     - Open cmd
-    ```git clone https://github.com/vined-underscore/VBot
+    ```git clone https://github.com/vined-underscore/VBot.git
     cd VBot
     python install.py
     ```
