@@ -15,8 +15,8 @@ class DevCmds(
         vbot.Cog,
         name="Dev",
         description="Various commands to manage the bot"):
-    def __init__(self, bot):
-        self.bot: vbot.Bot = bot
+    def __init__(self, bot: vbot.Bot):
+        self.bot = bot
         self.folder = main.__cog_folder__
 
     @vbot.command(
@@ -33,6 +33,7 @@ class DevCmds(
         aliases=alias.get_aliases("logout")
     )
     async def logout(self, ctx: vbot.Context):
+        await ctx.message.delete()
         print(
             f"{Fore.GREEN}[+]{Fore.LIGHTWHITE_EX} Logged out of the account {Fore.LIGHTBLUE_EX}{self.bot.user}")
         await self.bot.close()
