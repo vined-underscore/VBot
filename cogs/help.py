@@ -1,8 +1,7 @@
 import main
-import selfcord as discord
 from selfcord.ext import commands as vbot
 
-invisible_cogs = ['nitro sniper', 'events', 'errorhandler']
+invisible_cogs = ["snipers", "events", "errorhandler"]
 
 
 class HelpCommand(vbot.HelpCommand):
