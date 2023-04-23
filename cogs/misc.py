@@ -161,7 +161,7 @@ class MiscCmds(
     * Servers: {guilds}
     * Users: {users}
     * Messages Received: {self.bot.total_msgs}
-    * Commands Used: {self.bot.total_cmds}{f'    {nl}* Nitro Sniped: {self.bot.nitro_sniped}' if config.snipers["nitro_sniper"]["enabled"] else ""}{f'{nl}    * Invites Found: {self.bot.invites_found}' if config.snipers["invite_sniper"]["enabled"] else ""}{f'{nl}    * Keywords Found: {self.bot.keywords_found}' if config.snipers["keyword_sniper"]["enabled"] else ""}
+    * Commands Used: {self.bot.total_cmds}{f'{nl}    * Nitro Sniped: {self.bot.nitro_sniped}' if config.snipers["nitro_sniper"]["enabled"] else ""}{f'{nl}    * Invites Found: {self.bot.invites_found}' if config.snipers["invite_sniper"]["enabled"] else ""}{f'{nl}    * Keywords Found: {self.bot.keywords_found}' if config.snipers["keyword_sniper"]["enabled"] else ""}
     
 - Logging Stats:
     * Logging: {config.logging["is_logging"]}
