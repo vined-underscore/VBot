@@ -16,7 +16,7 @@ class config:
     # You can disable any of the webhooks by changing the URL to ""
     global snipers; snipers = {
         "nitro_sniper": {
-            "enabled": False,
+            "enabled": True,
             "url": "", # Nitro sniper URL
             "ping": True # If to ping @everyone when a code has been sniped
         },
