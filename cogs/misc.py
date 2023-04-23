@@ -140,7 +140,6 @@ class MiscCmds(
     async def ping(self, ctx: vbot.Context):
         msg = ctx.message
         latency = round(self.bot.latency * 1000)
-
         await msg.edit(content=f"```yaml\nThe bot's latency is {latency}ms```", delete_after=5)
 
     @vbot.command(
@@ -154,14 +153,16 @@ class MiscCmds(
         cpu = psutil.cpu_percent()
         ram = psutil.virtual_memory()
         disk = psutil.disk_usage('/')
+        nl = "\n"
+        # ugly ass code
         await msg.edit(content=f"""```yaml
 - Bot Stats:
     * Bot Uptime: {self.bot.get_uptime()}
     * Servers: {guilds}
     * Users: {users}
     * Messages Received: {self.bot.total_msgs}
-    * Commands Used: {self.bot.total_cmds}
-
+    * Commands Used: {self.bot.total_cmds}{f'    {nl}* Nitro Sniped: {self.bot.nitro_sniped}' if config.snipers["nitro_sniper"]["enabled"] else ""}{f'{nl}    * Invites Found: {self.bot.invites_found}' if config.snipers["invite_sniper"]["enabled"] else ""}{f'{nl}    * Keywords Found: {self.bot.keywords_found}' if config.snipers["keyword_sniper"]["enabled"] else ""}
+    
 - Logging Stats:
     * Logging: {config.logging["is_logging"]}
     * Error Logging: {config.logging["error_logging"] if config.logging["error_logging"] != "" else "disabled"}
