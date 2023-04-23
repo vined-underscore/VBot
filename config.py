@@ -23,12 +23,16 @@ class config:
         "invite_sniper": {
             "enabled": True,
             "url": "", # Invite sniper URL
-            "ping": False # If to ping @everyone when an invite has been found
+            "ping": False, # If to ping @everyone when an invite has been found
+            "ignore_limit": 500 # If the server has more than this amount of members, it will ignore the invite
+            # Disable limit by setting it to 0
         },
         "keyword_sniper": {
             "enabled": True, # If to log keywords
             "url": "", # Keyword sniper URL
             "ping": True, # If to ping @everyone when a keyword has been found
+            "ignore_limit": 0, # If the server has more than this amount of members, it will ignore the keywords
+            # Disable limit by setting it to 0
             
             "keywords": [
                 "keyword 1",
