@@ -14,7 +14,7 @@ from utils.req import __api__
 class Snipers(
         vbot.Cog,
         name="Snipers"):
-    def __init__(self, bot):
+    def __init__(self, bot: vbot.Bot):
         self.bot = bot
         self.nitro_reg = re.compile(
             "(discord.gift/|discord.com/gifts/|discordapp.com/gifts/)([a-zA-Z0-9]+)")
