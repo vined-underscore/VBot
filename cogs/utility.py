@@ -3,6 +3,7 @@ import selfcord as discord
 import main
 import asyncio
 import aiohttp
+import flag
 from selfcord.ext import commands as vbot
 from selfcord.ext import tasks
 from colorama import Fore
@@ -527,30 +528,49 @@ Found {len(all) if all != None else 0} people with the same tag:
                         "Sec-Fetch-Site": "same-origin",
                         "User-Agent": "Mozilla/5.0 (Linux; Android 9; Redmi Note 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4641.79 Mobile Safari/537.36"
                     })
+                r_4 = await http.get(f"https://ipapi.com/ip_api.php?ip={ip}")
 
                 ip1 = await r.json()
                 ip2 = await r_2.json()
                 ip3 = await r_3.json()
+                ip4 = await r_4.json()
                 data = {**ip1, **ip2, **ip3}
-
             try:
                 hostname = data["data"]["hostname"]
             except KeyError:
                 hostname = None
 
+            emoji = flag.flag(data["countryCode"])
+            c_symbol = ip4["currency"]["symbol"].encode("ascii").decode("unicode-escape").encode("utf-16", "surrogatepass").decode("utf-16")
+            
             await msg.edit(content=f"""```yaml
 IP Address: {data["query"]}
 Hostname: {hostname}
-Country: {data["country"]}
-Country Code: {data["countryCode"]}
-Country Calling Code: {data["country_calling_code"]}
-Region: {data["regionName"]}
-City: {data["city"]}
-ZIP Code: {data["zip"]}
-Location (lat long): {data["lat"]} {data["lon"]}
-Continent: {data["continent"]}
-Continent Code: {data["continentCode"]}
-Timezone: {data["timezone"]}
+Country: 
+  - Name: {ip4["country_name"]}
+  - Country Code: {data["countryCode"]}
+  - Country Calling Code: {data["country_calling_code"]}
+  - Country Emoji: {emoji} ({ip4["location"]["country_flag_emoji_unicode"]})
+  - Is in EU: {ip4["location"]["is_eu"]}
+  - Capital: {ip4["location"]["capital"]}
+  - Currency: {ip4["currency"]["code"]} ({ip4["currency"]["name"]} / {c_symbol})
+  - Continent: {data["continent"]}
+  - Continent Code: {data["continentCode"]}
+
+Timezone:
+  - Timezone: {data["timezone"]}
+  - Current Time: {ip4["time_zone"]["current_time"]}
+  - GMT Offset: {ip4["time_zone"]["gmt_offset"]}
+  - Code: {ip4["time_zone"]["code"]}
+  - Is Daylight Saving: {ip4["time_zone"]["is_daylight_saving"]}
+
+Location: 
+  - Region: {data["regionName"]}
+  - Region Code: {ip4["region_code"]}
+  - City: {data["city"]}
+  - ZIP Code: {data["zip"]}
+  - Coordinates (lat long): {data["lat"]} {data["lon"]}
+
 ISP: 
   - Name: {data["data"]["asn"]["name"]}
   - ASN: {data["data"]["asn"]["asn"]}
@@ -561,7 +581,8 @@ ISP:
 Security:
   - VPN: {data["data"]["privacy"]["vpn"]}
   - Proxy: {data["data"]["privacy"]["proxy"]}
-  - Tor: {data["data"]["privacy"]["tor"]}```
+  - Tor: {data["data"]["privacy"]["tor"]}
+  - Threat Level: {ip4["security"]["threat_level"].capitalize()}```
 """)
 
         except KeyError as e:
