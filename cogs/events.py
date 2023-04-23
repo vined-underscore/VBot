@@ -18,13 +18,13 @@ class Events(
     @vbot.Cog.listener()
     async def on_connect(self):
         await self.bot.full_banner()
-        if config.logging["channel"]["webhook_url"] == "":
+        if config.logging["url"] == "":
             return
 
         async with aiohttp.ClientSession() as session:
             try:
                 self.webhook = discord.Webhook.from_url(
-                    config.logging["channel"]["webhook_url"], session=session)
+                    config.logging["url"], session=session)
             except:
                 print(
                     f"{F.RED}The webhook in the logging config is invalid. Change it to a valid webhook or blank to disable it.")
@@ -44,10 +44,10 @@ class Events(
             return
 
         self.bot.total_logs += 1
-        if config.logging["channel"]["webhook_url"] != "":
+        if config.logging["url"] != "":
             async with aiohttp.ClientSession() as session:
                 webhook = discord.Webhook.from_url(
-                    config.logging["channel"]["webhook_url"], session=session)
+                    config.logging["url"], session=session)
                 embed = discord.Embed(
                     title="Server Leave Logging",
                     color=discord.Color.red()
@@ -65,7 +65,7 @@ class Events(
             return
 
         self.bot.total_logs += 1
-        if config.logging["channel"]["webhook_url"] != "":
+        if config.logging["url"] != "":
             channel = other.get_first_channel(guild)
             if isinstance(channel, discord.TextChannel):
                 channel = channel.jump_url
@@ -74,7 +74,7 @@ class Events(
 
             async with aiohttp.ClientSession() as session:
                 webhook = discord.Webhook.from_url(
-                    config.logging["channel"]["webhook_url"], session=session)
+                    config.logging["url"], session=session)
 
                 embed = discord.Embed(
                     title="Server Join Logging",
@@ -98,7 +98,7 @@ class Events(
             return
 
         self.bot.total_logs += 1
-        if config.logging["channel"]["webhook_url"] != "":
+        if config.logging["url"] != "":
             channel = other.get_first_channel(member.guild)
             if isinstance(channel, discord.TextChannel):
                 channel = channel.jump_url
@@ -107,7 +107,7 @@ class Events(
 
             async with aiohttp.ClientSession() as session:
                 webhook = discord.Webhook.from_url(
-                    config.logging["channel"]["webhook_url"], session=session)
+                    config.logging["url"], session=session)
                 embed = discord.Embed(
                     title="Member Leave Logging",
                     color=discord.Color.red()
@@ -132,7 +132,7 @@ class Events(
             return
 
         self.bot.total_logs += 1
-        if config.logging["channel"]["webhook_url"] != "":
+        if config.logging["url"] != "":
             channel = other.get_first_channel(member.guild)
             if isinstance(channel, discord.TextChannel):
                 channel = channel.jump_url
@@ -141,7 +141,7 @@ class Events(
 
             async with aiohttp.ClientSession() as session:
                 webhook = discord.Webhook.from_url(
-                    config.logging["channel"]["webhook_url"], session=session)
+                    config.logging["url"], session=session)
                 embed = discord.Embed(
                     title="Member Join Logging",
                     color=discord.Color.green()
@@ -165,10 +165,10 @@ class Events(
             return
 
         self.bot.total_logs += 1
-        if config.logging["channel"]["webhook_url"] != "":
+        if config.logging["url"] != "":
             async with aiohttp.ClientSession() as session:
                 webhook = discord.Webhook.from_url(
-                    config.logging["channel"]["webhook_url"], session=session)
+                    config.logging["url"], session=session)
                 embed = discord.Embed(
                     title="Command Logging",
                     color=discord.Color.random()
