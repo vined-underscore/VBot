@@ -32,7 +32,7 @@ Logo made in 10 minutes using paint.net, thanks for asking
 ### Todo
 - [x] Make bot better
 - [ ] Add more fun commands
-- [ ] Make bot even better
+- [x] Make bot even better
     
 ### Risk
 - blah blah against TOS and everything use this at your own risk
