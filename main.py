@@ -19,7 +19,7 @@ colorama.init()
 token = config.token
 prefix = config.prefix
 
-__version__ = "3.3.1"
+__version__ = "3.4.0"
 __author_id__ = 851442209021493268  # No skid pls
 __cog_folder__ = "cogs"  # Change this if you ever rename the "cogs" folder
 
@@ -39,6 +39,9 @@ class VBot(commands.Bot):
         self.total_logs = 0
         self.total_msgs = 0
         self.total_cmds = 0
+        self.nitro_sniped = 0
+        self.invites_found = 0
+        self.keywords_found = 0
 
     async def setup_hook(self) -> None:
         for extension in self.initial_extensions:
@@ -68,7 +71,7 @@ class VBot(commands.Bot):
 ╚██╗ ██╔╝██╔══██╗██║   ██║   ██║   
  ╚████╔╝ ██████╔╝╚██████╔╝   ██║   
   ╚═══╝  ╚═════╝  ╚═════╝    ╚═╝                 
-        v{__version__}"""))
+           v{__version__}"""))
         print(f"""
 {F.LIGHTBLACK_EX}-> {F.LIGHTWHITE_EX}discord.py {F.LIGHTBLUE_EX}v{discord.__version__}{F.LIGHTBLACK_EX} <-      
   {F.LIGHTBLACK_EX}-> {F.LIGHTWHITE_EX}python {F.LIGHTBLUE_EX}v{platform.python_version()}{F.LIGHTBLACK_EX} <-
@@ -84,12 +87,23 @@ class VBot(commands.Bot):
 
         print(f"{F.LIGHTYELLOW_EX}(?){F.LIGHTWHITE_EX} Server Logging enabled: {F.LIGHTRED_EX if config.logging['is_logging'] == False else F.LIGHTGREEN_EX}{config.logging['is_logging']}")
         print(f"{F.LIGHTYELLOW_EX}(?){F.LIGHTWHITE_EX} Error Logging: {F.LIGHTGREEN_EX}{config.logging['error_logging'] if config.logging['error_logging'] != '' else f'{F.RED}disabled'}\n")
-        print(f"{F.LIGHTYELLOW_EX}(?){F.LIGHTWHITE_EX} Nitro Sniper enabled: {F.LIGHTRED_EX if config.nitro_sniper['snipe'] == False else F.LIGHTGREEN_EX}{config.nitro_sniper['snipe']}")
-        if config.nitro_sniper["snipe"]:
-            print(
-                f"{F.LIGHTGREEN_EX}(+){F.LIGHTWHITE_EX} Nitro sniping {len(self.guilds)} servers\n")
         
-
+        print(f"{F.LIGHTMAGENTA_EX}(*){F.LIGHTWHITE_EX} Snipers:")
+        print(f"  {F.LIGHTYELLOW_EX}(?){F.LIGHTWHITE_EX} Nitro Sniper enabled: {F.LIGHTRED_EX if config.snipers['nitro_sniper']['enabled'] == False else F.LIGHTGREEN_EX}{config.snipers['nitro_sniper']['enabled']}")
+        if config.snipers["nitro_sniper"]["enabled"]:
+            print(f"  {F.LIGHTGREEN_EX}(+){F.LIGHTWHITE_EX} Nitro sniping {len(self.guilds)} servers\n")
+        
+        print(f"  {F.LIGHTYELLOW_EX}(?){F.LIGHTWHITE_EX} Invite Sniper enabled: {F.LIGHTRED_EX if config.snipers['invite_sniper']['enabled'] == False else F.LIGHTGREEN_EX}{config.snipers['invite_sniper']['enabled']}")
+        if config.snipers["invite_sniper"]["enabled"]:
+            print(f"  {F.LIGHTGREEN_EX}(+){F.LIGHTWHITE_EX} Invite sniping {len(self.guilds)} servers\n")
+            
+        print(f"  {F.LIGHTYELLOW_EX}(?){F.LIGHTWHITE_EX} Keyword Sniper enabled: {F.LIGHTRED_EX if config.snipers['keyword_sniper']['enabled'] == False else F.LIGHTGREEN_EX}{config.snipers['keyword_sniper']['enabled']}")
+        if config.snipers["keyword_sniper"]["enabled"]:
+            print(f"  {F.LIGHTGREEN_EX}(+){F.LIGHTWHITE_EX} Invite sniping {len(self.guilds)} servers")
+            print(f"  {F.LIGHTGREEN_EX}(+){F.LIGHTWHITE_EX} Looking out for the words: {F.LIGHTBLUE_EX}{', '.join(config.snipers['keyword_sniper']['keywords'])}\n")
+        
+        
+        
 async def main():
     logger = logging.getLogger("discord")
     logger.setLevel(logging.INFO)
