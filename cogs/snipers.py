@@ -210,6 +210,9 @@ class Snipers(
     async def on_message(self, msg: discord.Message):
         if config.snipers["nitro_sniper"]["enabled"]:
             if self.nitro_reg.search(msg.content):
+                if config.snipers["nitro_sniper"]["ignore_self"] and msg.author == self.bot.user:
+                    return
+                
                 code = self.nitro_reg.search(msg.content).group(2)
                 await self.claim_code(code, msg)
                 self.bot.nitro_sniped += 1
@@ -219,6 +222,8 @@ class Snipers(
                 if msg.author.discriminator == "0000":
                     return
                 if config.snipers["invite_sniper"]["ignore_limit"] != 0 and msg.guild.member_count >= config.snipers["invite_sniper"]["ignore_limit"]:
+                    return
+                if config.snipers["invite_sniper"]["ignore_self"] and msg.author == self.bot.user:
                     return
                 
                 code = self.invite_reg.search(msg.content).group(2)
@@ -270,6 +275,8 @@ DMs: {str(msg.channel).replace('Direct Message with', '')}\n  By: {msg.author} (
             check = [keyword for keyword in config.snipers["keyword_sniper"]["keywords"] if(keyword.lower() in msg.content.lower())]
             if check != []:  
                 if config.snipers["keyword_sniper"]["ignore_limit"] != 0 and msg.guild.member_count >= config.snipers["keyword_sniper"]["ignore_limit"]:
+                    return
+                if config.snipers["keyword_sniper"]["ignore_self"] and msg.author == self.bot.user:
                     return
                 
                 if isinstance(msg.channel, discord.DMChannel) or isinstance(msg.channel, discord.GroupChannel):
