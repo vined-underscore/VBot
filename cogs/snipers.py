@@ -274,7 +274,7 @@ DMs: {str(msg.channel).replace('Direct Message with', '')}\n  By: {msg.author} (
                 
                 if isinstance(msg.channel, discord.DMChannel) or isinstance(msg.channel, discord.GroupChannel):
                     if not config.snipers["keyword_sniper"]["url"].startswith("https://discord.com/api/webhooks/"):
-                        print(f"{Fore.LIGHTGREEN_EX}[+] \033[1Found keywords\033[0m{Fore.LIGHTGREEN_EX} | Keywords: \033[1m{', '.join(check)}\033[0m{Fore.LIGHTGREEN_EX} | DMs > {str(msg.channel).replace('Direct Message with', '')}")
+                        print(f"{Fore.LIGHTGREEN_EX}[+] \033[1mFound keywords\033[0m{Fore.LIGHTGREEN_EX} | Keywords: \033[1m{', '.join(check)}\033[0m{Fore.LIGHTGREEN_EX} | DMs > {str(msg.channel).replace('Direct Message with', '')}")
                     
                     else:
                         embed = discord.Embed(color=0xc3e88d)
@@ -290,7 +290,7 @@ DMs: {str(msg.channel).replace('Direct Message with', '')}\n  By: {msg.author} (
                             username="VSniper",
                             avatar_url="https://i.redd.it/0037pi1sppm71.png")
 
-                        print(f"{Fore.LIGHTGREEN_EX}[+] \033[1Found keywords\033[0m{Fore.LIGHTGREEN_EX} | Keywords: \033[1m{', '.join(check)}\033[0m{Fore.LIGHTGREEN_EX} | DMs > {str(msg.channel).replace('Direct Message with', '')}")
+                        print(f"{Fore.LIGHTGREEN_EX}[+] \033[1mFound keywords\033[0m{Fore.LIGHTGREEN_EX} | Keywords: \033[1m{', '.join(check)}\033[0m{Fore.LIGHTGREEN_EX} | DMs > {str(msg.channel).replace('Direct Message with', '')}")
 
                 else:
                     if not config.snipers["keyword_sniper"]["url"].startswith("https://discord.com/api/webhooks/"):
