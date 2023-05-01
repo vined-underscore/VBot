@@ -1,4 +1,4 @@
-import selfcord as discord
+import discord as discord
 import random
 import base64
 import secrets
@@ -9,7 +9,7 @@ import io
 import socket
 import struct
 import main
-from selfcord.ext import commands as vbot
+from discord.ext import commands as vbot
 from utils import alias
 
 

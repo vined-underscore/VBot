@@ -1,8 +1,8 @@
-import selfcord as discord
+import discord
 import psutil
 import config
 from colorama import Fore as F
-from selfcord.ext import commands as vbot
+from discord.ext import commands as vbot
 from utils import alias
 from humanfriendly import format_size
 

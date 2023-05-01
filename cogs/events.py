@@ -1,9 +1,9 @@
-import selfcord as discord
+import discord
 import config
 import aiohttp
 from datetime import datetime
 from colorama import Fore as F
-from selfcord.ext import commands as vbot
+from discord.ext import commands as vbot
 from utils import other
 from utils.other import log
 

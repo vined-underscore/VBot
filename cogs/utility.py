@@ -1,11 +1,11 @@
 import datetime
-import selfcord as discord
+import discord
 import main
 import asyncio
 import aiohttp
 import flag
-from selfcord.ext import commands as vbot
-from selfcord.ext import tasks
+from discord.ext import commands as vbot
+from discord.ext import tasks
 from colorama import Fore
 from utils import req
 from utils import alias

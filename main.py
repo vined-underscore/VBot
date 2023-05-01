@@ -1,4 +1,4 @@
-import selfcord as discord
+import discord 
 import asyncio
 import config
 import os
@@ -13,13 +13,13 @@ import datetime
 from utils import other
 from colorama import Fore as F
 from typing import List
-from selfcord.ext import commands
+from discord.ext import commands
 colorama.init()
 
 token = config.token
 prefix = config.prefix
 
-__version__ = "3.4.2"
+__version__ = "3.4.3"
 __author_id__ = 851442209021493268  # No skid pls
 __cog_folder__ = "cogs"  # Change this if you ever rename the "cogs" folder
 

@@ -1,5 +1,5 @@
 import main
-from selfcord.ext import commands as vbot
+from discord.ext import commands as vbot
 
 invisible_cogs = ["snipers", "events", "errorhandler"]
 

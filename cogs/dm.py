@@ -1,7 +1,7 @@
-import selfcord as discord
+import discord
 import asyncio
 import random
-from selfcord.ext import commands as vbot
+from discord.ext import commands as vbot
 
 
 class DMCmds(

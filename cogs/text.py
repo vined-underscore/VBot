@@ -1,6 +1,6 @@
 import base64
 from art import text2art
-from selfcord.ext import commands as vbot
+from discord.ext import commands as vbot
 
 
 class TextCmds(

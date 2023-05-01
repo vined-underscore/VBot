@@ -1,10 +1,10 @@
 # shit code that works
 
 import re
-import selfcord as discord
+import discord
 import aiohttp
 import config
-from selfcord.ext import commands as vbot
+from discord.ext import commands as vbot
 from colorama import Fore
 from main import token
 from time import perf_counter

@@ -1,11 +1,11 @@
 import asyncio
 import main
-import selfcord as discord
+import discord
 import random
 import aiohttp
 import itertools
 from colorama import Fore as F
-from selfcord.ext import commands as vbot
+from discord.ext import commands as vbot
 from utils import req
 from utils import alias
 from utils.paginator import AsyncPaginator

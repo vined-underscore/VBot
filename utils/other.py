@@ -1,9 +1,9 @@
 import os
-import selfcord as discord
+import discord
 import config
 import traceback
 import sys
-from selfcord.ext import commands
+from discord.ext import commands
 from datetime import datetime
 from colorama import Fore as F
 from typing import Any, Union

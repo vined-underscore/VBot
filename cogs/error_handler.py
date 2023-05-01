@@ -1,7 +1,7 @@
 import traceback
 import sys
 from utils.other import log_error
-from selfcord.ext import commands as vbot
+from discord.ext import commands as vbot
 
 
 class ErrorHandler(vbot.Cog):

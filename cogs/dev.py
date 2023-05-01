@@ -7,7 +7,7 @@ import textwrap
 import traceback
 from contextlib import redirect_stdout
 from utils import alias
-from selfcord.ext import commands as vbot
+from discord.ext import commands as vbot
 from colorama import Fore
 
 
