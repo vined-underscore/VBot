@@ -17,7 +17,7 @@ class HelpCommand(vbot.HelpCommand):
         desc = "\n".join(desc)
 
         msg = f"""```yaml
-> Made by {self.context.bot.get_user(main.__author_id__)} | {main.__author_id__} <
+> Made by {main.__author__} | {main.__author_id__} <
 
 # {len([command for command in self.context.bot.walk_commands()])} Commands (and subcommands) # VBot v{main.__version__}
 
@@ -48,7 +48,7 @@ class HelpCommand(vbot.HelpCommand):
                 desc += f"\n"
 
         msg = f"""```yaml
-> Made by {self.context.bot.get_user(main.__author_id__)} | {main.__author_id__} <
+> Made by {main.__author__} | {main.__author_id__} <
 
 Group Info: {group.qualified_name}
 
@@ -70,7 +70,7 @@ Group Commands:
 Aliases:\n - {', '.join(cmd.aliases) if cmd.aliases else 'None'}\n
 Usage: {f"{self.context.clean_prefix}{cmd.name} {cmd.signature}" if not cmd.full_parent_name else f"{self.context.clean_prefix}{cmd.full_parent_name} {cmd.name} {cmd.signature}"}"""
         msg = f"""```yaml
-> Made by {self.context.bot.get_user(main.__author_id__)} | {main.__author_id__} <
+> Made by {main.__author__} | {main.__author_id__} <
 
 Command Info: {cmd.qualified_name}
 
@@ -88,7 +88,7 @@ Command Info: {cmd.qualified_name}
         cmds = "\n".join(
             f"- {self.context.clean_prefix}{cmd.name}: {cmd.description.replace('PREFIX', self.context.clean_prefix)}" for cmd in cmds)
         msg = f"""```yaml
-> Made by {self.context.bot.get_user(main.__author_id__)} | {main.__author_id__} <
+> Made by {main.__author__} | {main.__author_id__} <
 
 Category Info: {cog.qualified_name}
 
