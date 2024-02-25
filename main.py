@@ -20,7 +20,8 @@ token = config.token
 prefix = config.prefix
 
 __version__ = "3.4.4"
-__author_id__ = 851442209021493268  # No skid pls
+__author_id__ = 894413091545161790  # No skid pls
+__author__ = "Arezium"
 __cog_folder__ = "cogs"  # Change this if you ever rename the "cogs" folder
 
 
@@ -62,7 +63,6 @@ class VBot(commands.Bot):
         return str(datetime.timedelta(seconds = int(uptime)))
     
     def banner(self):
-        author = self.get_user(__author_id__)
         print(fade.purpleblue(f"""
 
 ██╗   ██╗██████╗  ██████╗ ████████╗
@@ -76,7 +76,7 @@ class VBot(commands.Bot):
 {F.LIGHTBLACK_EX}-> {F.LIGHTWHITE_EX}discord.py {F.LIGHTBLUE_EX}v{discord.__version__}{F.LIGHTBLACK_EX} <-      
   {F.LIGHTBLACK_EX}-> {F.LIGHTWHITE_EX}python {F.LIGHTBLUE_EX}v{platform.python_version()}{F.LIGHTBLACK_EX} <-
 
-{F.LIGHTBLACK_EX}* {F.LIGHTWHITE_EX}Made by {F.LIGHTBLUE_EX}{author}{F.LIGHTBLACK_EX}
+{F.LIGHTBLACK_EX}* {F.LIGHTWHITE_EX}Made by {F.LIGHTBLUE_EX}{__author__} ({__author_id__}){F.LIGHTBLACK_EX}
 {F.LIGHTBLACK_EX}* {F.LIGHTBLUE_EX}{len([command for command in self.walk_commands()])} {F.LIGHTWHITE_EX}commands and subcommands""")
     
     def full_banner(self):
